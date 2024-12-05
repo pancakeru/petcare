@@ -1,10 +1,10 @@
 <nav>
-    <a href="#" class="logo">
+    <a href="index.html" class="logo">
       <!-- <img src="placeHolder"> -->
       <span class="nav-item">Admin</span>
     </a>
     <ul>
-      <li><a href="#">
+      <li><a href="dashboard/dashboard.html">
         <span class="nav-item">Dashboard</span>
       </a></li>
       <li><a href="#">
@@ -16,7 +16,7 @@
       <li><a href="#">
         <span class="nav-item">Shopping</span>
       </a></li>
-      <li><a href="#">
+      <li><a href="gamepage.html">
         <span class="nav-item">Game Page</span>
       </a></li>
       <li><a href="#" class="logout">
