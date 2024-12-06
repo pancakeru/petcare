@@ -8,10 +8,20 @@
     justify-content: center;
     align-items: center;
     align-self: center;
+    background-image: url('images/petimgHome1.jpg');
+    margin: 0%;
+    height: 40vh;
+    background-size: contain;
+
 }
 
 #banner h1 {
     text-align: center;
     font-family: TitleFont;
     font-size: 125px;
+    margin: 0%;
+}
+
+#banner img {
+    
 }
