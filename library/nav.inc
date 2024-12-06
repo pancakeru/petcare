@@ -10,7 +10,7 @@
       <li><a href="#">
         <span class="nav-item">Pet Profile</span>
       </a></li>
-      <li><a href="#">
+      <li><a href="vetappointment/vetappointment.html">
         <span class="nav-item">Vet Appointment</span>
       </a></li>
       <li><a href="#">
