@@ -1,3 +1,45 @@
 body{
     background: rgb(226, 226, 226);
 }
+
+.gameGrid {
+
+    position: relative;
+    margin: 10px;
+    border: 1px solid black;
+    width: 35vw;
+    height: 35vw;
+    align-items: center;
+
+    background-color: rgb(68, 68, 68);
+
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding-bottom: 10px;
+}
+
+.gameIcon {
+    position: relative;
+    aspect-ratio: 1;
+    width: 33%;
+    min-width: 100px;
+    z-index: 1;
+    border: 1px solid black;
+    background-color: white;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+
+    border: 1px solid blue;
+
+    top : 50%;
+    transform: translateY(-50%);
+}
