@@ -20,21 +20,66 @@
           -->
         <!-- ...existing code... -->
 
-        <div class="petProfile container"></div>
-        <div class="appointments container">
+        <div class="flexRow container" id="petProfile">
+            <div class="two" id="petPicture">
+                <img src="../images/petimgHome1.jpg" alt="placeholder">
+            </div>
+            <div class="two" id="petDescription">
+                <p>I like to eat chocolate even though im a dog</p>
+            </div>
+        </div>
+        <div class="flexRow container" id ="appointments">
             <!-- up and coming appointment  -->
+             <div class ="two" id="upcoming">
+                <h2>Upcoming Appointments</h2>
+                <div class ="list">
+                    <li>appointment 1</li>
+                    <li>appointment 2</li>
+                    <li>appointment 3</li>
+                </div>
+             </div>
              <!-- appointment history -->
+             <div class="two" id="history">
+                <h2> Appointment History</h2>
+                <div class ="list">
+                    <li>previous 1</li>
+                    <li>previous 2</li>
+                    <li>previous 3</li>
+                </div>
+            </div>
         </div>
 
         <div class="shoppingCart container">
-            <!-- shopping cart -->
+            <h2>Shopping Cart</h2>
+            <div class="list">
+                <li>Item 1</li>
+                <li>Item 2</li>
+                <li>Item 3</li>
+                <li>Item 4</li>
+                <li>Item 5</li>
+                <li>Item 6</li>
+            </div>
         </div>
 
         <div class="savings container">
-            <!-- savings -->
+            <h2>Savings</h2>
+            <div class="bar-container">
+                <div class="bar" data-value="70">With Savings: <span>$20</span></div>
+                <div class="bar" data-value="80">No savings: <span>$25</span></div>
+                <div class="bar" data-value="10">Saved: <span>$5</span></div>
+            </div>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="../library/loader.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach(bar => {
+                const value = bar.getAttribute('data-value');
+                bar.style.width = value + '%';
+            });
+        });
+    </script>
 </body>
 </html>
