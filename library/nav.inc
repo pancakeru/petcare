@@ -21,6 +21,3 @@
       </a></li>
       <li><a href="#" class="logout">
         <span class="nav-item">Log out</span>
-      </a></li>
-    </ul>
-  </nav>
