@@ -4,15 +4,13 @@
 }
 
 #banner {
-    background-image: url();
     justify-content: center;
     align-items: center;
     align-self: center;
-    background-image: url('images/petimgHome1.jpg');
     margin: 0%;
     height: 40vh;
     background-size: contain;
-
+    background-repeat: repeat;
 }
 
 #banner h1 {
@@ -20,8 +18,4 @@
     font-family: TitleFont;
     font-size: 125px;
     margin: 0%;
-}
-
-#banner img {
-    
 }

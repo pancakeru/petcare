@@ -2,3 +2,7 @@ body{
     background: rgb(226, 226, 226);
     margin: 0;
 }
+
+#banner {
+    background-image: url('images/petimgHome1.jpg');
+}
