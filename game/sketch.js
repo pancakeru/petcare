@@ -10,6 +10,12 @@ let speed = 3.5;
 let rockImg;
 let rocks = [];
 
+let pause = true;
+let endScreen = false;
+let startScreen = true;
+
+let score = 0;
+
 function preload() {
     bg = loadImage("assets/runner/rockland.png");
     rockImg = loadImage("assets/runner/rock.png");
@@ -32,12 +38,36 @@ function setup() {
 function draw() {
     for (let b of bgObjs) {
         b.display();
-        b.move();
     }
 
-    for (let r of rocks) {
-        r.display();
-        r.move();
+    textAlign(CENTER);
+
+    if(startScreen) {
+        textSize(80);
+        text("Desert Run", width/2, height/2.2);
+        textSize(30);
+        text("'Space' to start", width/2, height/1.8);
+    }
+
+    fill(255);
+
+    if (!pause) {
+        for (let b of bgObjs) {
+            b.display();
+            b.move();
+        }
+    
+        for (let r of rocks) {
+            r.display();
+            r.move();
+            r.collision();
+        }
+
+        fill(0);
+        textSize(40);
+        text(score, width-40, 50);
+
+        fill(255);
     }
 
     rect(width/10, playerY, 80, 80);
@@ -45,11 +75,23 @@ function draw() {
     if (jump) {
         Jump();
     }
+
+    if (endScreen) {
+        textSize(80);
+        text("Game Over", width/2, height/2.2);
+        textSize(30);
+        text("Score: " + score, width/2, height/1.8);
+    }
 }
 
 function keyPressed() {
-    if (key == ' ' && !jump) {
+    if (key == ' ' && !jump && !endScreen) {
         jump = true;
+    }
+
+    if (key == ' ' && pause && !endScreen) {
+        pause = false;
+        startScreen = false;
     }
 }
 
@@ -104,6 +146,7 @@ class Rock {
 
     reset() {
         this.x = random(width, width + 2100);
+        score += 1;
     }
 
     move() {
@@ -111,6 +154,13 @@ class Rock {
 
         if (this.x < -80) {
            this.reset();
+        }
+    }
+
+    collision() {
+        if (dist(width/10, playerY, this.x, this.y) <= 10) {
+            pause = true;
+            endScreen = true;
         }
     }
 }
