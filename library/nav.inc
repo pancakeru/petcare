@@ -16,7 +16,7 @@
       <li><a href="#">
         <span class="nav-item">Shopping</span>
       </a></li>
-      <li><a href="gamepage.html">
+      <li><a href="game/gamepage.html">
         <span class="nav-item">Game Page</span>
       </a></li>
       <li><a href="#" class="logout">
