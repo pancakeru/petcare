@@ -3,16 +3,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="library/nav.css">
+    <link rel="stylesheet" href="../library/nav.css">
 </head>
 <body>
     <h1>Game Page</h1>
 
     <!-- navbar -->
-    <div data-replacement="library/nav.inc"></div>
+    <div data-replacement="library/nav.inc" data-path-to-root="../"></div>
 
     <!-- content goes here -->
+     <div class="container">
+        <div class="game">
+            <h2>Game</h2>
+            <p>Play the game here</p>
+        </div>
+     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="library/loader.js"></script>
+    <script src="../library/loader.js"></script>
 </body>
 </html>
