@@ -18,3 +18,22 @@ body{
 iframe {
     padding: 0;
 }
+
+.gameIcon a {
+    width: 15vw;
+    height: 15vw;
+}
+
+.gameIcon img {
+    width: 100%;
+    height: 100%;
+    align-self: center;
+    padding: 0%;
+}
+
+.gameIcon p {
+    text-align: center;
+    font-family: TitleFont;
+    font-size: 3vw;
+    margin-top: 0%;
+}
