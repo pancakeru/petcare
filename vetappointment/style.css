@@ -24,7 +24,7 @@ body{
 .appointmentForm input,
 .appointmentForm textarea,
 .appointmentForm button {
-    width: 100%;
+    width: 95%;
     margin-bottom: 15px;
     padding: 10px;
     border: 1px solid #ccc;
