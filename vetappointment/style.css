@@ -3,13 +3,16 @@ body{
 }
 
 .appointmentForm {
-    max-width: 500px;
-    margin: auto;
+    max-width: 600px;
+    width: 100%;
     padding: 20px;
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .appointmentForm label {
