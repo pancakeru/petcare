@@ -93,6 +93,18 @@ function keyPressed() {
         pause = false;
         startScreen = false;
     }
+
+    if (key == ' ' && pause && endScreen) {
+        speed = 3.5;
+        rocks = [];
+        for (let i = 0; i < 3; i++) {
+            let temp = new Rock(width + i * 500);
+            rocks.push(temp);
+        }
+        pause = false;
+        endScreen = false;
+        score = 0;
+    }
 }
 
 function Jump() {
