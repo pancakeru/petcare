@@ -5,22 +5,23 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="../library/nav.css">
     <link rel="stylesheet" href="../bannerStyle.css">
+
+    <style>
+        body {
+            background-image: url("assets/runner/desertBG.jpg");
+            background-size: cover;
+        }
+    </style>
 </head>
 <body>
-    <div id="banner">
-        <h1>Game Page</h1>
-    </div>
 
     <!-- navbar -->
     <div data-replacement="library/nav.inc" data-path-to-root="../"></div>
 
-    <!-- content goes here -->
-     <div class="gameGrid" style="margin-top: 2%;">
-        <div class="gameIcon">
-            <a href="runner.html"><img src="assets/runner/desertIcon.png"></a>
-            <p>Desert Run</p>
-        </div>
+     <div class="gameGrid">
+        <iframe src="gamewindow.html" scrolling="no" width="700" height="500"></iframe>
      </div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="../library/loader.js"></script>
 </body>

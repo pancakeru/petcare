@@ -3,48 +3,37 @@ body{
 }
 
 .gameGrid {
-
-    position: relative;
-    margin: 10px;
-    border: 1px solid black;
-    width: 35vw;
-    height: 35vw;
-    align-items: center;
-
-    background-color: rgb(68, 68, 68);
-
-    left: 50%;
-    transform: translateX(-50%);
+    justify-content: center;
     display: flex;
-    justify-content: space-around;
-    align-items: flex-end;
-    padding-bottom: 10px;
-}
-
-.gameIcon {
-    position: relative;
-    aspect-ratio: 1;
-    width: 33%;
-    min-width: 100px;
-    z-index: 1;
-    border: 1px solid black;
-    background-color: white;
-}
-
-.container {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    position: absolute;
-    width: 100%;
-
-    border: 1px solid blue;
-
-    top : 50%;
-    transform: translateY(-50%);
+    justify-self: center;
+    justify-items: center;
+    margin-top: 10%;
 }
 
 #banner {
     background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6)), 
     url('../images/gamepageimg.png');
+}
+
+iframe {
+    padding: 0;
+}
+
+.gameIcon a {
+    width: 15vw;
+    height: 15vw;
+}
+
+.gameIcon img {
+    width: 100%;
+    height: 100%;
+    align-self: center;
+    padding: 0%;
+}
+
+.gameIcon p {
+    text-align: center;
+    font-family: TitleFont;
+    font-size: 3vw;
+    margin-top: 0%;
 }
