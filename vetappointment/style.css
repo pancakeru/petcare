@@ -1,3 +1,7 @@
+body{
+    background: rgb(226, 226, 226);
+}
+
 .appointmentForm {
     max-width: 500px;
     margin: auto;
