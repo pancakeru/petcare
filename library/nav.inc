@@ -13,11 +13,17 @@
       <li><a href="vetappointment/vetappointment.html">
         <span class="nav-item">Vet Appointment</span>
       </a></li>
-      <li><a href="#">
+      <li><a href="shopping/index.html">
         <span class="nav-item">Shopping</span>
+      </a></li>
+      <li><a href="shopping/cart.php">
+        <span class="nav-item">Shopping Cart</span>
       </a></li>
       <li><a href="game/gamepage.html">
         <span class="nav-item">Game Page</span>
       </a></li>
       <li><a href="#" class="logout">
         <span class="nav-item">Log out</span>
+      </a></li>
+    </ul>
+</nav>

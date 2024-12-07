@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../library/nav.css">
+</head>
+<body>
+    <h1>Shopping Page</h1>
+    <div data-replacement="library/nav.inc" data-path-to-root="../"></div>
+    <div class="products">
+        <form action="add_to_cart.php" method="post" class="product-form">
+            <input type="hidden" name="product" value="dogFood">
+            <input type="hidden" name="price" value="10.00">
+            <div class="product" onclick="this.parentNode.submit();">
+                <h2>Dog Food</h2>
+                <p>$10.00</p>
+                <img src="../images/products/dogFood.jpg" alt="dogFood" class="product-image">
+            </div>
+        </form>
+        <form action="add_to_cart.php" method="post" class="product-form">
+            <input type="hidden" name="product" value="hotdogBed">
+            <input type="hidden" name="price" value="20.00">
+            <div class="product" onclick="this.parentNode.submit();">
+                <h2>Hot Dog Bed</h2>
+                <p>$20.00</p>
+                <img src="../images/products/hotdogBed.jpg" alt="hotdogBed" class="product-image">
+            </div>
+        </form>
+        <!-- Add more products as needed -->
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="../library/loader.js"></script>
+</body>
+</html>

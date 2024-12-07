@@ -1,0 +1,65 @@
+body {
+    background-color: #f4f4f4;
+    padding: 5px;
+}
+.checkout-container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.purchased-items {
+    list-style-type: disc;
+    text-align: left;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 0px;
+}
+.purchased-items li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+}
+.purchased-items li:last-child {
+    border-bottom: none;
+}
+.total {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 5px;
+}
+.button-container {
+    text-align: center;
+    margin-top: 5px;
+    display: flex;
+    justify-content: center;
+    gap: 15px; 
+
+    left: 50%;
+    transform: translateX(50%);
+}
+.checkout-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 5px;
+}
+.checkout-form label {
+    margin-top: 5px;
+}
+.checkout-form input {
+    margin-bottom: 5px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.checkout-form button {
+    margin-top: 10px;
+}
+.continue-shopping-container {
+    text-align: center;
+    margin-top: 5px;
+}
