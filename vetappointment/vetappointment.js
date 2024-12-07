@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const dateInput = document.getElementById("date");
     const timeInput = document.getElementById("time");
 
-    const today = new Date().toISOString().split("T")[0];
-    dateInput.setAttribute("min", today);
+    const today = new Date();
+    const formattedToday = today.toISOString().split("T")[0];
+    dateInput.setAttribute("min", formattedToday);
     
     // Form submission
     form.addEventListener("submit", (event) => {
@@ -12,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Get form input values
         const petSelect = document.getElementById("petSelect").value;
-        const date = document.getElementById("date").value;
-        const time = document.getElementById("time").value;
+        const date = dateInput.value;
+        const time = timeInput.value;
         const reason = document.getElementById("reason").value;
 
         // Validate inputs
