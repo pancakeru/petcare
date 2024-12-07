@@ -7,7 +7,7 @@
       <li><a href="dashboard/dashboard.html">
         <span class="nav-item">Dashboard</span>
       </a></li>
-      <li><a href="#">
+      <li><a href="petprofile/petprofile.html">
         <span class="nav-item">Pet Profile</span>
       </a></li>
       <li><a href="vetappointment/vetappointment.html">
