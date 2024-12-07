@@ -4,7 +4,7 @@ body{
 
 /* Position the petFilter container */
 .petFilter {
-    position: fixed;
+    position: absolute;
     top: 180px;
     left: 100px;
     display: flex;
