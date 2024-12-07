@@ -1,7 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("appointmentForm");
+    const dateInput = document.getElementById("date");
+    const timeInput = document.getElementById("time");
 
-    // Form submission event listener
+    const today = new Date().toISOString().split("T")[0];
+    dateInput.setAttribute("min", today);
+    
+    // Form submission
     form.addEventListener("submit", (event) => {
         event.preventDefault();
 
@@ -14,6 +19,14 @@ document.addEventListener("DOMContentLoaded", () => {
         // Validate inputs
         if (!petSelect || !date || !time || !reason.trim()) {
             alert("Please fill in all fields before submitting the form.");
+            return;
+        }
+
+        // Validate date and time
+        const selectedDateTime = new Date(`${date}T${time}`);
+        const now = new Date();
+        if (selectedDateTime <= now) {
+            alert("Please select a date and time in the future.");
             return;
         }
 
