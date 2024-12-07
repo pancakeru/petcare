@@ -1,0 +1,37 @@
+.checkout-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.thank-you {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+.purchased-items {
+    list-style-type: disc;
+    padding: 0;
+    text-align: left;
+    margin-left: 20px;
+    display: flex;
+    flex-direction: column; 
+}
+.purchased-items li {
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+.purchased-items li:last-child {
+    border-bottom: none;
+}
+.total {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 20px;
+}
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
