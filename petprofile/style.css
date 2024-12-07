@@ -149,18 +149,18 @@ form textarea {
 }
 
 .pet-item.dog {
-    background-image: url('images/dogbackground.jpg');
+    background-image: url('../images/petprofile/dogbackground.jpg');
     background-color: rgba(255, 255, 255, 0.2);
 }
 
 .pet-item.cat {
-    background-image: url('images/catbackground.jpg');
+    background-image: url('../images/petprofile/catbackground.jpg');
     background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* Delete Button */
 .delete-button {
-    background: url('images/delete_button.png') no-repeat center;
+    background: url('../images/petprofile/delete_button.png') no-repeat center;
     position: absolute;
     top: 5px;
     right: 5px;
@@ -195,7 +195,7 @@ form textarea {
 
 /* Edit Button */
 .edit-button {
-    background: url('images/edit_button.png') no-repeat center;
+    background: url('../images/petprofile/edit_button.png') no-repeat center;
     position: absolute;
     bottom: 5px;
     right: 5px;
