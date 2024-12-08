@@ -10,26 +10,28 @@ $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    // verify the password
-    if (password_verify($password, $user['password'])) {
-        // password is correct, start a session
-        session_start();
-        $_SESSION['username'] = $username;
-        header("Location: ../index.html"); // redirect to homepage
-        exit();
+try {
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        // verify the password
+        if (password_verify($password, $user['password'])) {
+            // password is correct, start a session
+            session_start();
+            $_SESSION['username'] = $username;
+            header("Location: ../index.html"); // redirect to homepage
+            exit();
+        } else {
+            // incorrect password
+            header("Location: login.php?error=Invalid Password");
+            exit();
+        }
     } else {
-        // incorrect password
-        header("Location: login.php?error=Invalid Password");
+        // username not found
+        header("Location: login.php?error=Invalid Username");
         exit();
     }
-} else {
-    // username not found
-    header("Location: login.php?error=Invalid Username");
-    exit();
+} finally {
+    $stmt->close();
+    $conn->close();
 }
-
-$stmt->close();
-$conn->close();
 ?>
