@@ -1,62 +1,49 @@
-<?php
-require_once '../database/dbConnect.php';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="signup.css">
+</head>
+<body>
+    <div class="signup-container">
+        <h2>Sign Up</h2>
+        <?php
+        // Display the error message if it exists in the URL
+        if (isset($_GET['error'])) {
+            echo "<p style='color: red;'>" . htmlspecialchars($_GET['error']) . "</p>";
+        }
+        ?>
+        <form action="signupAction.php" method="post" onsubmit="return validateForm()">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+    </div>
+    <script>
+        function validateForm() {
+            const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
 
-$username = $_POST['username'];
-$password = $_POST['password'];
-$email = $_POST['email'];
+            if (!emailPattern.test(email)) {
+                alert('Please enter a valid email address.');
+                return false;
+            }
 
-// Check for duplicate username
-$sql = "SELECT * FROM users WHERE username = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+            if (!passwordPattern.test(password)) {
+                alert('Password must be at least 8 characters long and include both uppercase and lowercase letters.');
+                return false;
+            }
 
-if ($result->num_rows > 0) {
-    echo "<script>
-        alert('Username already exists.');
-        window.history.back();
-        document.getElementById('username').style.borderColor = 'red';
-    </script>";
-    exit();
-}
-
-// Check for duplicate email
-$sql = "SELECT * FROM users WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    echo "<script>
-        alert('Email already exists.');
-        window.history.back();
-        document.getElementById('email').style.borderColor = 'red';
-    </script>";
-    exit();
-}
-
-// Hash the password
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-// Insert new user
-$sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $username, $hashed_password, $email);
-
-
-if ($stmt->execute()) {
-    echo "<script>
-        alert('Sign up successful!');
-        window.location.href = 'login.html';
-    </script>";
-} else {
-    echo "<script>
-        alert('Error: Could not sign up.');
-        window.history.back();
-    </script>";
-}
-
-$conn->close();
-?>
+            return true;
+        }
+    </script>
+</body>
+</html>

@@ -9,6 +9,16 @@
 <body>
     <div class="login-container">
         <h2>Login</h2>
+        <?php
+            // Display the error message if it exists in the URL
+            if (isset($_GET['error'])) {
+                echo "<p style='color: red;'>" . htmlspecialchars($_GET['error']) . "</p>";
+            }
+            else if (isset($_GET["success"])) {
+                echo "<p style='color: green;'>" . htmlspecialchars($_GET['success']) . "</p>";
+            }
+        ?>
+        
         <form action="loginAction.php" method="post">
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
@@ -16,13 +26,7 @@
             <input type="password" id="password" name="password" required>
             <button type="submit" class="btn">Login</button>
         </form>
-        <button class="btn" onclick="window.location.href='signup.html'">Sign Up</button>
-        <?php
-            // Display the error message if it exists in the URL
-            if (isset($_GET['error'])) {
-                echo "<p style='color: red;'>" . htmlspecialchars($_GET['error']) . "</p>";
-            }
-        ?>
+        <button class="btn" onclick="window.location.href='signup.php'">Sign Up</button>
     </div>
 </body>
 </html>
