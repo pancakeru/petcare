@@ -45,3 +45,19 @@ iframe {
     padding: 2%;
     width: 20vw;
 }
+
+.boardEl {
+    background-color:brown;
+    padding: 1%;
+    border-radius: 3px;
+    font-size: 25px;
+    color: white;
+}
+
+#myEl {
+    background-color: coral;
+    padding: 1%;
+    border-radius: 3px;
+    font-size: 25px;
+    color: white;
+}

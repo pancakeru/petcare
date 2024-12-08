@@ -21,6 +21,9 @@ let catRun;
 let sliceX = 0;
 let sliceY = 0;
 
+let scores = [3, 7, 10];
+let added = false;
+
 function preload() {
     bg = loadImage("assets/runner/rockland.png");
     rockImg = loadImage("assets/runner/rock.png");
@@ -35,6 +38,7 @@ function preload() {
 
 function setup() {
     createCanvas(700, 500);
+    initialBoard();
 
     for (let i = 0; i < 2; i++) {
         let temp = new BGImg(i * 700);
@@ -100,6 +104,11 @@ function draw() {
             localStorage.setItem("runnerScore", score);
             highScore = score;
         }
+
+        if (!added) {
+            updateBoard();
+            added = true;
+        }
     }
 
     if (frameCount % 5 == 0 && !pause) {
@@ -136,6 +145,7 @@ function keyPressed() {
         pause = false;
         endScreen = false;
         score = 0;
+        added = false;
     }
 }
 
@@ -206,5 +216,25 @@ class Rock {
             pause = true;
             endScreen = true;
         }
+    }
+}
+
+function updateBoard() {
+    const leaderboard = parent.document.querySelector("#results");
+    let myEl = parent.document.createElement('p');
+        myEl.id = "myEl";
+        myEl.textContent = "Me - " + localStorage.getItem("runnerScore");
+    if (score > highScore) {
+        leaderboard.appendChild(myEl);
+    }
+}
+
+function initialBoard() {
+    const leaderboard = parent.document.querySelector("#results");
+    let myEl = parent.document.createElement('p');
+    if (localStorage.getItem("runnerScore") !== null) {
+        myEl.id = "myEl";
+        myEl.textContent = "Me - " + localStorage.getItem("runnerScore");
+        leaderboard.appendChild(myEl);
     }
 }
