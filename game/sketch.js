@@ -16,9 +16,14 @@ let startScreen = true;
 
 let score = 0;
 
+let catRun;
+let sliceX = 0;
+let sliceY = 0;
+
 function preload() {
     bg = loadImage("assets/runner/rockland.png");
     rockImg = loadImage("assets/runner/rock.png");
+    catRun = loadImage("assets/runner/catrun.png");
 }
 
 function setup() {
@@ -70,7 +75,7 @@ function draw() {
         fill(255);
     }
 
-    rect(width/10, playerY, 80, 80);
+    image(catRun, width/10, playerY, 160, 80, sliceX, sliceY, 512, 256);
 
     if (jump) {
         Jump();
@@ -81,6 +86,19 @@ function draw() {
         text("Game Over", width/2, height/2.2);
         textSize(30);
         text("Score: " + score, width/2, height/1.8);
+    }
+
+    if (frameCount % 5 == 0 && !pause) {
+        if (sliceX < 512) {
+            sliceX += 512;
+        } else {
+            sliceX = 0;
+            sliceY += 256;
+        }
+
+        if (sliceY >= 1024) {
+            sliceY = 0;
+        }
     }
 }
 
