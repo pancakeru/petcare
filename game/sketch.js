@@ -1,10 +1,10 @@
 let bg;
 let bgObjs = [];
 
-let playerY = 330;
+let playerY = 300;
 let jump = false;
 let jumpPower = 15;
-let groundLvl = 330;
+let groundLvl = 300;
 let speed = 3.5;
 
 let rockImg;
@@ -75,7 +75,7 @@ function draw() {
         fill(255);
     }
 
-    image(catRun, width/10, playerY, 160, 80, sliceX, sliceY, 512, 256);
+    image(catRun, width/10, playerY, 200, 100, sliceX, sliceY, 512, 256);
 
     if (jump) {
         Jump();
@@ -86,6 +86,8 @@ function draw() {
         text("Game Over", width/2, height/2.2);
         textSize(30);
         text("Score: " + score, width/2, height/1.8);
+        textSize(15);
+        text("'Space' to restart", width/2, height/1.6);
     }
 
     if (frameCount % 5 == 0 && !pause) {
@@ -155,7 +157,7 @@ class BGImg {
             this.x = 700;
         }
 
-        if (frameCount % 200 == 0 && this.speed < 8) {
+        if (frameCount % 180 == 0 && this.speed < 8) {
             speed += 0.2;
         }
     }
