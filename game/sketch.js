@@ -285,6 +285,57 @@ function initialBoard() {
     if (localStorage.getItem("runnerScore") !== null) {
         myEl.id = "myEl";
         myEl.textContent = "Me - " + localStorage.getItem("runnerScore");
-        leaderboard.appendChild(myEl);
     }
+
+    let john = parent.document.createElement('p');
+    john.classList.add("boardEl");
+    john.textContent = "John Doe - 10";
+
+    let jane = parent.document.createElement('p');
+    jane.classList.add("boardEl");
+    jane.textContent = "Jane Doe - 7";
+
+    let bog = parent.document.createElement('p');
+    bog.classList.add("boardEl");
+    bog.textContent = "bog - 3";
+
+   
+        let pos = 3;
+        for (let i = 0; i < scores.length; i++) {
+            if (highScore > scores[i]) {
+                pos -= 1;
+            }
+        }
+        console.log(pos);
+        leaderboard.innerHTML = '';
+
+        switch(pos) {
+            case 0:
+            leaderboard.appendChild(myEl);
+            leaderboard.appendChild(john);
+            leaderboard.appendChild(jane);
+            leaderboard.appendChild(bog);
+            break;
+
+            case 1:
+                leaderboard.appendChild(john);
+                leaderboard.appendChild(myEl);
+                leaderboard.appendChild(jane);
+                leaderboard.appendChild(bog);
+                break;
+            
+            case 2:
+                leaderboard.appendChild(john);
+                leaderboard.appendChild(jane);
+                leaderboard.appendChild(myEl);
+                leaderboard.appendChild(bog);
+            break;
+        
+            case 3:
+                leaderboard.appendChild(john);
+                leaderboard.appendChild(jane);
+                leaderboard.appendChild(bog);
+                leaderboard.appendChild(myEl);
+            break;
+        }
 }
