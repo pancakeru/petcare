@@ -58,6 +58,5 @@ if ($stmt->execute()) {
     </script>";
 }
 
-
 $conn->close();
 ?>
