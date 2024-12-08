@@ -39,3 +39,9 @@ iframe {
     font-size: 3vw;
     margin-top: 0%;
 }
+
+#leaderboard {
+    background-color: antiquewhite;
+    padding: 2%;
+    width: 20vw;
+}
