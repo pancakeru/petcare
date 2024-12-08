@@ -7,7 +7,7 @@ body{
 /* Position the petFilter container */
 .petFilter {
     position: absolute;
-    margin-top: 200px;
+    margin-top: 150px;
     left: 100px;
     display: flex;
     align-items: center;
