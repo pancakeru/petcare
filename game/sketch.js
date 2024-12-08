@@ -15,6 +15,7 @@ let endScreen = false;
 let startScreen = true;
 
 let score = 0;
+let highScore;
 
 let catRun;
 let sliceX = 0;
@@ -24,6 +25,12 @@ function preload() {
     bg = loadImage("assets/runner/rockland.png");
     rockImg = loadImage("assets/runner/rock.png");
     catRun = loadImage("assets/runner/catrun.png");
+
+    if (localStorage.getItem("runnerScore") !== null) {
+        highScore = parseInt(localStorage.getItem("runnerScore"));
+    } else {
+        highScore = 0;
+    }
 }
 
 function setup() {
@@ -88,6 +95,11 @@ function draw() {
         text("Score: " + score, width/2, height/1.8);
         textSize(15);
         text("'Space' to restart", width/2, height/1.6);
+
+        if (score >= highScore) {
+            localStorage.setItem("runnerScore", score);
+            highScore = score;
+        }
     }
 
     if (frameCount % 5 == 0 && !pause) {
