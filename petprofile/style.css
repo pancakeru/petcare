@@ -1,5 +1,7 @@
 body{
     background: rgb(226, 226, 226);
+    margin: 0%;
+    padding: 0%;
 }
 
 /* Position the petFilter container */
