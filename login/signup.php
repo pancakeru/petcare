@@ -45,6 +45,7 @@ $sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sss", $username, $hashed_password, $email);
 
+
 if ($stmt->execute()) {
     echo "<script>
         alert('Sign up successful!');
@@ -56,6 +57,7 @@ if ($stmt->execute()) {
         window.history.back();
     </script>";
 }
+
 
 $conn->close();
 ?>
