@@ -10,6 +10,11 @@ let currentPets = [];
 
 // Create pet profile card
 const createPetProfile = (id, type, name, age, history, createdDate) => {
+    if (!id || !type || !name || !age || !history) {
+        console.warn("Invalid pet data:", { id, type, name, age, history });
+        return;
+    }
+
     const petItem = document.createElement("div");
     petItem.classList.add("pet-item", type);
     petItem.dataset.type = type;
@@ -30,11 +35,9 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
         document.getElementById("petAge").value = age;
         document.getElementById("medicalHistory").value = history;
 
-        // Remove old save event to avoid duplicates
         saveButton.replaceWith(saveButton.cloneNode(true));
         const updatedSaveButton = document.getElementById("save");
 
-        // Update pet info on save
         updatedSaveButton.addEventListener("click", async () => {
             const updatedType = document.getElementById("petSelect").value.trim();
             const updatedName = document.getElementById("petName").value.trim();
@@ -42,38 +45,35 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
             const updatedHistory = document.getElementById("medicalHistory").value.trim();
 
             if (!updatedType || !updatedName || isNaN(updatedAge) || updatedAge <= 0 || !updatedHistory) {
-                alert("Please fill all the blank, and age must be a positive number!");
+                alert("Please fill all the blank fields, and age must be a positive number!");
                 return;
             }
 
-            // Update pet card data
-            petItem.classList.remove(type);
-            petItem.classList.add(updatedType);
-            petItem.dataset.type = updatedType;
-            petItem.innerHTML = `
-                <strong>${updatedName}</strong> (${updatedAge} years old)
-                <button class="delete-button"></button>
-                <button class="edit-button"></button>
-            `;
+            try {
+                const response = await fetch("petSave.php?action=save_edits", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id, type: updatedType, name: updatedName, age: updatedAge, medical_history: updatedHistory }),
+                });
+                const result = await response.json();
 
-            // Update delete and edit button functionality
-            petItem.querySelector(".delete-button").addEventListener("click", () => {
-                deletePetFromBackend(id);
-                activityContainer.removeChild(petItem);
-                currentPets = currentPets.filter((pet) => pet !== petItem);
-            });
-
-            petItem.querySelector(".edit-button").addEventListener("click", () => {
-                event.stopPropagation();
-                // Reopen edit functionality
-                addPanel.classList.remove("hidden");
-                document.getElementById("petSelect").value = updatedType;
-                document.getElementById("petName").value = updatedName;
-                document.getElementById("petAge").value = updatedAge;
-                document.getElementById("medicalHistory").value = updatedHistory;
-            });
-
-            addPanel.classList.add("hidden");
+                if (result.status === "success") {
+                    petItem.classList.remove(type);
+                    petItem.classList.add(updatedType);
+                    petItem.dataset.type = updatedType;
+                    petItem.innerHTML = `
+                        <strong>${updatedName}</strong> (${updatedAge} years old)
+                        <button class="delete-button"></button>
+                        <button class="edit-button"></button>
+                    `;
+                    addPanel.classList.add("hidden");
+                } else {
+                    alert("Failed to update pet. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error updating pet:", error);
+                alert("An error occurred. Please try again.");
+            }
         });
     });
 
@@ -99,7 +99,32 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
     activityContainer.appendChild(petItem);
 };
 
-// Add Pet
+// Fetch existing pets from backend
+const fetchPetsFromBackend = async () => {
+    try {
+        const response = await fetch("petSave.php?action=fetch_pets");
+        if (!response.ok) throw new Error("Failed to fetch pets.");
+        const pets = await response.json();
+        pets.forEach((pet) => {
+            createPetProfile(pet.id, pet.type, pet.name, pet.age, pet.medical_history, pet.created_date);
+        });
+    } catch (error) {
+        console.error("Error fetching pets:", error);
+        alert("Failed to fetch pets. Please try again later.");
+    }
+};
+
+// Delete pet from backend
+const deletePetFromBackend = async (id) => {
+    try {
+        await fetch(`petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
+    } catch (error) {
+        console.error("Error deleting pet:", error);
+        alert("Failed to delete pet.");
+    }
+};
+
+// Event Listeners
 addButton.addEventListener("click", () => {
     addPanel.classList.remove("hidden");
     addPetForm.reset();
@@ -117,43 +142,29 @@ saveButton.addEventListener("click", async () => {
     const history = document.getElementById("medicalHistory").value.trim();
 
     if (!type || !name || isNaN(age) || age <= 0 || !history) {
-        alert("Please fill all the blank, and age must be a positive number!");
+        alert("Please fill all the blank fields, and age must be a positive number!");
         return;
     }
 
-    const response = await fetch("petSave.php?action=save_pet", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, name, age, medical_history: history }),
-    });
-    const result = await response.json();
+    try {
+        const response = await fetch("petSave.php?action=save_pet", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type, name, age, medical_history: history }),
+        });
+        const result = await response.json();
 
-    if (result.status === "success") {
-        createPetProfile(result.id, type, name, age, history);
-        addPanel.classList.add("hidden");
-        addPetForm.reset();
-    } else {
-        alert("Failed to save pet. Please try again.");
+        if (result.status === "success") {
+            createPetProfile(result.id, type, name, age, history);
+            addPanel.classList.add("hidden");
+            addPetForm.reset();
+        } else {
+            alert("Failed to save pet. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error saving pet:", error);
+        alert("An error occurred. Please try again.");
     }
-});
-
-// Fetch existing pets from backend
-const fetchPetsFromBackend = async () => {
-    const response = await fetch("petSave.php?action=fetch_pets");
-    const pets = await response.json();
-    pets.forEach((pet) => {
-        createPetProfile(pet.id, pet.type, pet.name, pet.age, pet.medical_history, pet.created_date);
-    });
-};
-
-// Delete pet from backend
-const deletePetFromBackend = async (id) => {
-    await fetch(`petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
-};
-
-// Close Pet Info Panel
-document.getElementById("close").addEventListener("click", () => {
-    infoPanel.classList.add("hidden");
 });
 
 // Filter Pets
@@ -168,5 +179,10 @@ filterSelect.addEventListener("change", () => {
     });
 });
 
-// Load existing pets on page load
+// Close Pet Info Panel
+document.getElementById("close").addEventListener("click", () => {
+    infoPanel.classList.add("hidden");
+});
+
+// Load pets on page load
 fetchPetsFromBackend();
