@@ -1,6 +1,6 @@
 <?php
-$dsn = 'sqlite:petcareDB.sqlite';
-$db = new PDO($dsn);
+$dbn = 'sqlite:petcareDB.sqlite';
+$db = new PDO($dbn);
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 if ($_GET['action'] === 'fetch_pets') {
