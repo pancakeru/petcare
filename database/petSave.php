@@ -1,5 +1,5 @@
 <?php
-$dbn = 'sqlite:petcareDB.sqlite';
+$dbn = 'petcareDB.sqlite';
 $db = new PDO($dbn);
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
