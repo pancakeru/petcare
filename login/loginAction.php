@@ -1,5 +1,6 @@
 <?php
 require_once '../database/dbConnect.php';
+ 
 
 $username = $_POST['username'];
 $password = $_POST['password'];
@@ -16,6 +17,7 @@ try {
         if (password_verify($password, $user['password'])) {
             // password is correct, start a session
             session_start();
+            $_SESSION['user_logged_in'] = true;
             $_SESSION['username'] = $username;
             header("Location: ../index.html"); // redirect to homepage
             exit();
