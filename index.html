@@ -12,10 +12,23 @@
     </div>
 
     <!-- navbar -->
-    <div data-replacement="library/nav.inc"></div>
+    <div id="navbar"></div>
 
     <!-- content goes here -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#navbar").load("library/nav.inc", function() {
+                $.ajax({
+                    url: 'library/login_status.php',
+                    method: 'GET',
+                    success: function(response) {
+                        $("#login-logout").html(response);
+                    }
+                });
+            });
+        });
+    </script>
     <script src="library/loader.js"></script>
 </body>
 </html>

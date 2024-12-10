@@ -22,8 +22,6 @@
       <li><a href="game/gamepage.html">
         <span class="nav-item">Game Page</span>
       </a></li>
-      <li><a href="login/login.php" class="login">
-        <span class="nav-item">Log in</span>
-      </a></li>
+      <li id="login-logout"></li>
     </ul>
 </nav>
