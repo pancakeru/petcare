@@ -9,11 +9,11 @@ const filterSelect = document.getElementById("filter");
 let currentPets = [];
 
 // Create pet profile card
-const createPetProfile = (type, name, age, history) => {
+const createPetProfile = (id, type, name, age, history, createdDate) => {
     const petItem = document.createElement("div");
     petItem.classList.add("pet-item", type);
     petItem.dataset.type = type;
-    petItem.dataset.created = new Date().toLocaleString();
+    petItem.dataset.created = createdDate || new Date().toLocaleString();
 
     petItem.innerHTML = `
         <strong>${name}</strong> (${age} years old)
@@ -35,7 +35,7 @@ const createPetProfile = (type, name, age, history) => {
         const updatedSaveButton = document.getElementById("save");
 
         // Update pet info on save
-        updatedSaveButton.addEventListener("click", () => {
+        updatedSaveButton.addEventListener("click", async () => {
             const updatedType = document.getElementById("petSelect").value.trim();
             const updatedName = document.getElementById("petName").value.trim();
             const updatedAge = parseInt(document.getElementById("petAge").value.trim(), 10);
@@ -58,9 +58,11 @@ const createPetProfile = (type, name, age, history) => {
 
             // Update delete and edit button functionality
             petItem.querySelector(".delete-button").addEventListener("click", () => {
+                deletePetFromBackend(id);
                 activityContainer.removeChild(petItem);
                 currentPets = currentPets.filter((pet) => pet !== petItem);
             });
+
             petItem.querySelector(".edit-button").addEventListener("click", () => {
                 event.stopPropagation();
                 // Reopen edit functionality
@@ -88,6 +90,7 @@ const createPetProfile = (type, name, age, history) => {
     });
 
     petItem.querySelector(".delete-button").addEventListener("click", () => {
+        deletePetFromBackend(id);
         activityContainer.removeChild(petItem);
         currentPets = currentPets.filter((pet) => pet !== petItem);
     });
@@ -107,7 +110,7 @@ cancelButton.addEventListener("click", () => {
     addPetForm.reset();
 });
 
-saveButton.addEventListener("click", () => {
+saveButton.addEventListener("click", async () => {
     const type = document.getElementById("petSelect").value.trim();
     const name = document.getElementById("petName").value.trim();
     const age = parseInt(document.getElementById("petAge").value.trim(), 10);
@@ -118,10 +121,35 @@ saveButton.addEventListener("click", () => {
         return;
     }
 
-    createPetProfile(type, name, age, history);
-    addPanel.classList.add("hidden");
-    addPetForm.reset();
+    const response = await fetch("petSave.php?action=save_pet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, name, age, medical_history: history }),
+    });
+    const result = await response.json();
+
+    if (result.status === "success") {
+        createPetProfile(result.id, type, name, age, history);
+        addPanel.classList.add("hidden");
+        addPetForm.reset();
+    } else {
+        alert("Failed to save pet. Please try again.");
+    }
 });
+
+// Fetch existing pets from backend
+const fetchPetsFromBackend = async () => {
+    const response = await fetch("petSave.php?action=fetch_pets");
+    const pets = await response.json();
+    pets.forEach((pet) => {
+        createPetProfile(pet.id, pet.type, pet.name, pet.age, pet.medical_history, pet.created_date);
+    });
+};
+
+// Delete pet from backend
+const deletePetFromBackend = async (id) => {
+    await fetch(`petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
+};
 
 // Close Pet Info Panel
 document.getElementById("close").addEventListener("click", () => {
@@ -139,3 +167,6 @@ filterSelect.addEventListener("change", () => {
         }
     });
 });
+
+// Load existing pets on page load
+fetchPetsFromBackend();
