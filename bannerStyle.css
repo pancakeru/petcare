@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'TitleFont';
-    src: url('font/WinterHalf.ttf');
+    src: url('font/WinterHalf.ttf') format('ttf');
 }
 
 #banner {
