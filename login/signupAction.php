@@ -6,25 +6,23 @@ $password = $_POST['password'];
 $email = $_POST['email'];
 
 // Check for duplicate username
-$sql = "SELECT * FROM users WHERE username = ?";
+$sql = "SELECT * FROM users WHERE username = :username";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+$stmt->bindValue(':username', $username, SQLITE3_TEXT);
+$result = $stmt->execute();
 
-if ($result->num_rows > 0) {
+if ($result->fetchArray(SQLITE3_ASSOC)) {
     header('Location: signup.php?error=Username already exists.');
     exit();
 }
 
 // Check for duplicate email
-$sql = "SELECT * FROM users WHERE email = ?";
+$sql = "SELECT * FROM users WHERE email = :email";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
+$stmt->bindValue(':email', $email, SQLITE3_TEXT);
+$result = $stmt->execute();
 
-if ($result->num_rows > 0) {
+if ($result->fetchArray(SQLITE3_ASSOC)) {
     header('Location: signup.php?error=Email already exists.');
     exit();
 }
@@ -33,9 +31,11 @@ if ($result->num_rows > 0) {
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
 // Insert new user
-$sql = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
+$sql = "INSERT INTO users (username, password, email) VALUES (:username, :password, :email)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $username, $hashed_password, $email);
+$stmt->bindValue(':username', $username, SQLITE3_TEXT);
+$stmt->bindValue(':password', $hashed_password, SQLITE3_TEXT);
+$stmt->bindValue(':email', $email, SQLITE3_TEXT);
 
 if ($stmt->execute()) {
     header('Location: login.php?success=Sign up successful!');

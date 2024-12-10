@@ -1,18 +1,17 @@
 <?php
 require_once '../database/dbConnect.php';
+
 $username = $_POST['username'];
 $password = $_POST['password'];
 
 // check if the username exists
-$sql = "SELECT * FROM users WHERE username = ?";
+$sql = "SELECT * FROM users WHERE username = :username";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+$stmt->bindValue(':username', $username, SQLITE3_TEXT);
+$result = $stmt->execute();
 
 try {
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+    if ($user = $result->fetchArray(SQLITE3_ASSOC)) {
         // verify the password
         if (password_verify($password, $user['password'])) {
             // password is correct, start a session
@@ -31,7 +30,6 @@ try {
         exit();
     }
 } finally {
-    $stmt->close();
     $conn->close();
 }
 ?>
