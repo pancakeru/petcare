@@ -13,6 +13,12 @@
         <h1>Shopping</h1>
     </div>
     <div data-replacement="library/nav.inc" data-path-to-root="../"></div>
+    
+    <!-- Add search bar here -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search products...">
+    </div>
+    
     <div class="products">
         <form action="add_to_cart.php" method="post" class="product-form">
             <input type="hidden" name="product" value="dogFood">
@@ -38,5 +44,15 @@
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="../library/loader.js"></script>
+    <script>
+        $(document).ready(function(){
+            $("#searchInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $(".product-form").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
 </body>
 </html>
