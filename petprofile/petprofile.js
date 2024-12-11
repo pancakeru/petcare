@@ -50,7 +50,7 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
             }
 
             try {
-                const response = await fetch("../database/petSave.php?action=save_edits", {
+                const response = await fetch("petSave.php?action=save_edits", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id, type: updatedType, name: updatedName, age: updatedAge, medical_history: updatedHistory }),
@@ -68,11 +68,11 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
                     `;
                     addPanel.classList.add("hidden");
                 } else {
-                    alert("Failed to update pet. Please try again.");
+                    alert("Please login before adding your pets.");
                 }
             } catch (error) {
                 console.error("Error updating pet:", error);
-                alert("An error occurred. Please try again.");
+                alert("Please login before adding your pets.");
             }
         });
     });
@@ -102,7 +102,7 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
 // Fetch existing pets from backend
 const fetchPetsFromBackend = async () => {
     try {
-        const response = await fetch("../database/petSave.php?action=fetch_pets");
+        const response = await fetch("petSave.php?action=fetch_pets");
         if (!response.ok) throw new Error("Failed to fetch pets.");
         const pets = await response.json();
         pets.forEach((pet) => {
@@ -110,14 +110,14 @@ const fetchPetsFromBackend = async () => {
         });
     } catch (error) {
         console.error("Error fetching pets:", error);
-        alert("Failed to fetch pets. Please try again later.");
+        alert("Please login before adding pets");
     }
 };
 
 // Delete pet from backend
 const deletePetFromBackend = async (id) => {
     try {
-        await fetch(`../database/petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
+        await fetch(`petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
     } catch (error) {
         console.error("Error deleting pet:", error);
         alert("Failed to delete pet.");
@@ -147,7 +147,7 @@ saveButton.addEventListener("click", async () => {
     }
 
     try {
-        const response = await fetch("../database/petSave.php?action=save_pet", {
+        const response = await fetch("petSave.php?action=save_pet", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ type, name, age, medical_history: history }),
@@ -163,7 +163,7 @@ saveButton.addEventListener("click", async () => {
         }
     } catch (error) {
         console.error("Error saving pet:", error);
-        alert("An error occurred. Please try again.");
+        alert("Please longin before adding pets.");
     }
 });
 
