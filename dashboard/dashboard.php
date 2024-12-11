@@ -1,3 +1,8 @@
+<?php
+    session_start();
+
+    $productName = ["dogFood" => "Dog Food", "hotdogBed" => "Hot Dog Bed"];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,15 +15,6 @@
 
     <div data-replacement="library/nav.inc" data-path-to-root="../"></div>
     <div class="grid">
-        <!-- layout 
-
-            we want to show the pet profile and maybe it's hobby fav food etc
-            we want to show if there's any up and coming appointments
-            we want to show previous appointments
-            we want to show things in their shopping cart as of right now 
-            we want to show how much money they have saved 
-          -->
-        <!-- ...existing code... -->
 
         <div class="flexRow container" id="petProfile">
             <div class="two" id="petPicture">
@@ -51,12 +47,15 @@
         <div class="shoppingCart container">
             <h2>Shopping Cart</h2>
             <div class="list">
-                <li>Item 1</li>
-                <li>Item 2</li>
-                <li>Item 3</li>
-                <li>Item 4</li>
-                <li>Item 5</li>
-                <li>Item 6</li>
+                <?php
+                if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+                    foreach ($_SESSION['cart'] as $item) {
+                        echo "<li>" . htmlspecialchars($productName[$item['product']]) . " - Quantity: " . htmlspecialchars($item['quantity']) . "</li>";
+                    }
+                } else {
+                    echo "<li>Your shopping cart is empty.</li>";
+                }
+                ?>
             </div>
         </div>
 

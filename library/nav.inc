@@ -2,8 +2,8 @@
     <a href="index.html" class="logo">
       <span class="nav-item">Home</span>
     </a>
-    <ul>
-      <li><a href="dashboard/dashboard.html">
+    <ul>  
+      <li><a href="dashboard/dashboard.php">
         <span class="nav-item">Dashboard</span>
       </a></li>
       <li><a href="petprofile/petprofile.html">
