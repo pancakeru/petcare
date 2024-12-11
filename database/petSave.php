@@ -1,6 +1,6 @@
 <?php
-$dsn = '../database/petcareDB.sqlite'';
-$db = new PDO($dsn);
+$dbn = '../database/petcareDB.sqlite'';
+$db = new SQLite3($dbn);
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Fetch all pets
