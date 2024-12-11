@@ -1,7 +1,7 @@
 <?php
 session_start();
 $dbn = '../database/petcareDB.sqlite';
-$db = new PDO($dbn);
+$db = new SQLite3($dbn);
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Ensure the user is logged in
