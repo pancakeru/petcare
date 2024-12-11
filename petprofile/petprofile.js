@@ -68,11 +68,11 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
                     `;
                     addPanel.classList.add("hidden");
                 } else {
-                    alert("Please login before adding your pets.");
+                    alert("Failed to update pet. Please try again.");
                 }
             } catch (error) {
                 console.error("Error updating pet:", error);
-                alert("Please login before adding your pets.");
+                alert("An error occurred. Please try again.");
             }
         });
     });
@@ -110,7 +110,7 @@ const fetchPetsFromBackend = async () => {
         });
     } catch (error) {
         console.error("Error fetching pets:", error);
-        alert("Please login before adding pets");
+        alert("Failed to fetch pets. Please try again later.");
     }
 };
 
@@ -163,7 +163,7 @@ saveButton.addEventListener("click", async () => {
         }
     } catch (error) {
         console.error("Error saving pet:", error);
-        alert("Please longin before adding pets.");
+        alert("An error occurred. Please try again.");
     }
 });
 
