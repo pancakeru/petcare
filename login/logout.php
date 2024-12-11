@@ -1,8 +1,7 @@
-
 <?php
 session_start();
 session_unset();
 session_destroy();
-header("Location: ../index.html");
+header("Location: " . $_SERVER['HTTP_REFERER']);
 exit();
 ?>
