@@ -5,7 +5,7 @@ $dbname = '../database/petcareDB.sqlite';
 // Create connection
 $conn = new SQLite3($dbname);
 
-// Step 2: Create the 'users' table
+
 $sql_users = "CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
@@ -13,13 +13,13 @@ $sql_users = "CREATE TABLE IF NOT EXISTS users (
     email TEXT NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )";
-if ($conn->exec($sql_users)) {
-    echo "Table 'users' created successfully!<br>";
-} else {
+if (!$conn->exec($sql_users)) {
     die("Error creating table 'users': " . $conn->lastErrorMsg());
-}
 
-// Step 3: Create the 'shopping_cart' table
+}
+    
+
+
 $sql_cart = "CREATE TABLE IF NOT EXISTS shopping_cart (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -28,9 +28,38 @@ $sql_cart = "CREATE TABLE IF NOT EXISTS shopping_cart (
     added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )";
-if ($conn->exec($sql_cart)) {
-    echo "Table 'shopping_cart' created successfully!<br>";
-} else {
+if (!$conn->exec($sql_cart)) {
     die("Error creating table 'shopping_cart': " . $conn->lastErrorMsg());
 }
+
+$sql_inventory = "CREATE TABLE IF NOT EXISTS inventory (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    price REAL NOT NULL
+)";
+
+if (!$conn->exec($sql_inventory)) {
+    die("Error creating table 'inventory': " . $conn->lastErrorMsg());
+} 
+
+// adding product to inventory
+$invtCount = $conn->querySingle("SELECT COUNT(*) as count FROM inventory");
+
+if ($invtCount == 0) {
+    // Add products to inventory
+$products = [
+    ['name' => 'dogFood', 'price' => 10.00],
+    ['name' => 'hotdogBed', 'price' => 20.00]
+    // Add more products as needed
+];
+
+foreach ($products as $product) {
+    $sql = "INSERT INTO inventory (name, price) VALUES (:name, :price)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bindValue(':name', $product['name'], SQLITE3_TEXT);
+    $stmt->bindValue(':price', $product['price'], SQLITE3_FLOAT);
+    $stmt->execute();
+}
+}
+
 ?>
