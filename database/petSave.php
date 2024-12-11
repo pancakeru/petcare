@@ -1,4 +1,12 @@
 <?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    http_response_code(401); // Unauthorized
+    echo json_encode(["status" => "error", "message" => "User not logged in"]);
+    exit;
+}
 $dbn = '../database/petcareDB.sqlite';
 $db = new SQLite3($dbn);
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

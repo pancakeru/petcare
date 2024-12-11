@@ -103,6 +103,11 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
 const fetchPetsFromBackend = async () => {
     try {
         const response = await fetch("../database/petSave.php?action=fetch_pets");
+        if (response.status === 401) { // User not logged in
+            alert("You must log in to access pet profiles.");
+            window.location.href = "..login/login.php"; // Redirect to login page
+            return;
+        }
         if (!response.ok) throw new Error("Failed to fetch pets.");
         const pets = await response.json();
         pets.forEach((pet) => {
