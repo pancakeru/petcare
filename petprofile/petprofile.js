@@ -50,7 +50,7 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
             }
 
             try {
-                const response = await fetch("petSave.php?action=save_edits", {
+                const response = await fetch("../database/petSave.php?action=save_edits", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id, type: updatedType, name: updatedName, age: updatedAge, medical_history: updatedHistory }),
@@ -102,7 +102,7 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
 // Fetch existing pets from backend
 const fetchPetsFromBackend = async () => {
     try {
-        const response = await fetch("petSave.php?action=fetch_pets");
+        const response = await fetch("../database/petSave.php?action=fetch_pets");
         if (!response.ok) throw new Error("Failed to fetch pets.");
         const pets = await response.json();
         pets.forEach((pet) => {
@@ -117,7 +117,7 @@ const fetchPetsFromBackend = async () => {
 // Delete pet from backend
 const deletePetFromBackend = async (id) => {
     try {
-        await fetch(`petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
+        await fetch(`../database/petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
     } catch (error) {
         console.error("Error deleting pet:", error);
         alert("Failed to delete pet.");
@@ -147,7 +147,7 @@ saveButton.addEventListener("click", async () => {
     }
 
     try {
-        const response = await fetch("petSave.php?action=save_pet", {
+        const response = await fetch("../database/petSave.php?action=save_pet", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ type, name, age, medical_history: history }),
