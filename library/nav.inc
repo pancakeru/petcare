@@ -1,6 +1,5 @@
-<nav>
+<nav id="navbar">
     <a href="index.html" class="logo">
-      <!-- <img src="placeHolder"> -->
       <span class="nav-item">Home</span>
     </a>
     <ul>
