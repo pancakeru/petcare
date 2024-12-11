@@ -68,11 +68,11 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
                     `;
                     addPanel.classList.add("hidden");
                 } else {
-                    alert("Please login before adding your pets.");
+                    alert("Failed to update pet. Please try again.");
                 }
             } catch (error) {
                 console.error("Error updating pet:", error);
-                alert("Please login before adding your pets.");
+                alert("An error occurred. Please try again.");
             }
         });
     });
