@@ -1,5 +1,7 @@
 <?php
 session_start();
+require_once '../database/dbConnect.php';
+
 $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
 $productName = ["dogFood" => "Dog Food", "hotdogBed" => "Hot Dog Bed"];
 $total = 0;
@@ -16,7 +18,26 @@ $phone = htmlspecialchars($_POST['phone']);
 $creditcard = htmlspecialchars($_POST['creditcard']);
 $maskedCreditCard = str_repeat('*', 12) . substr($creditcard, -4);
 
-session_destroy();
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+
+    // Get user ID from username
+    $stmt = $conn->prepare("SELECT id FROM users WHERE username = :username");
+    $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+    $result = $stmt->execute();
+    $user = $result->fetchArray(SQLITE3_ASSOC);
+
+    if ($user) {
+        $userId = $user['id'];
+
+        // Remove cart items from the database
+        $stmt = $conn->prepare("DELETE FROM shopping_cart WHERE user_id = :user_id");
+        $stmt->bindValue(':user_id', $userId, SQLITE3_INTEGER);
+        $stmt->execute();
+    }
+}
+
+unset($_SESSION['cart']);
 ?>
 
 <!DOCTYPE html>

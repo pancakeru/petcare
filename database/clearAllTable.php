@@ -6,7 +6,7 @@ try {
     $conn->exec("PRAGMA foreign_keys = OFF");
 
     // List of tables to clear
-    $tables = ['shopping_cart', 'users'];
+    $tables = ['shopping_cart', 'users', "inventory"];
 
     foreach ($tables as $table) {
         $sql = "DELETE FROM $table";
