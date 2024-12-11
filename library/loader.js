@@ -21,6 +21,14 @@ $(document).ready(function(){
         return;
       }
       // OK
+      $.ajax({
+        url: pathToRoot + 'library/login_status.php',
+        method: 'GET',
+        data: { path_to_root: pathToRoot },
+        success: function(response) {
+            $("#login-logout").html(response);
+        }
+      });
       // Exit if no path to root.
       if (!pathToRoot) {
         console.log("No path to root given for " + replacementValue + ", links not adjusted.");
