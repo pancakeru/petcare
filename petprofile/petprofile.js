@@ -110,7 +110,7 @@ const fetchPetsFromBackend = async () => {
         });
     } catch (error) {
         console.error("Error fetching pets:", error);
-        alert("Failed to fetch pets. Please try again later.");
+        alert("Please login before adding pets");
     }
 };
 
@@ -163,7 +163,7 @@ saveButton.addEventListener("click", async () => {
         }
     } catch (error) {
         console.error("Error saving pet:", error);
-        alert("An error occurred. Please try again.");
+        alert("Please longin before adding pets.");
     }
 });
 
