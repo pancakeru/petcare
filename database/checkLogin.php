@@ -2,9 +2,9 @@
 session_start();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['loggedIn' => false, 'error' => 'User not logged in']);
-} else {
-    echo json_encode(['loggedIn' => true, 'user_id' => $_SESSION['user_id']]);
-}
+$response = [
+    'loggedIn' => isset($_SESSION['username']) && !empty($_SESSION['username']) // Check for username
+];
+
+echo json_encode($response);
 ?>
