@@ -62,4 +62,20 @@ foreach ($products as $product) {
 }
 }
 
+// Create Pets table
+$sql_pets = "CREATE TABLE IF NOT EXISTS Pets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    age INTEGER NOT NULL,
+    history TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)";
+if (!$conn->exec($sql_pets)) {
+    die("Error creating table 'Pets': " . $conn->lastErrorMsg());
+}
+
+
 ?>
