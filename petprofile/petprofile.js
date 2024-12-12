@@ -8,40 +8,53 @@ const infoPanel = document.getElementById("petinfo");
 const filterSelect = document.getElementById("filter");
 let currentPets = [];
 
-// Check if the user is logged in
-const isLoggedIn = async () => {
+// Redirect to login if user is not logged in
+const checkLoginStatus = async () => {
     try {
-        const response = await fetch('checkLogin.php');
-        if (!response.ok) {
-            console.error('Error with checkLogin.php:', response.statusText);
-            return false;
-        }
+        const response = await fetch("../database/checkLogin.php"); // Backend to check login status
         const result = await response.json();
-        console.log('Login check response:', result);
-        console.log('Login check result:', result);
-        return result.loggedIn;
+        if (!result.loggedIn) {
+            window.location.href = "../login/login.php?error=Please login to access pet profiles.";
+        }
     } catch (error) {
-        console.error('Fetch error:', error);
-        return false;
+        console.error("Error checking login status:", error);
+        alert("An error occurred. Please try again.");
+        window.location.href = "../login/login.php";
+    }
+};
+
+// Fetch pets from backend
+const fetchPetsFromBackend = async () => {
+    try {
+        const response = await fetch("../database/petSave.php?action=fetch_pets");
+        if (!response.ok) throw new Error("Failed to fetch pets.");
+        const pets = await response.json();
+        pets.forEach((pet) => {
+            createPetProfile(pet.id, pet.type, pet.name, pet.age, pet.medical_history, pet.created_date);
+        });
+    } catch (error) {
+        console.error("Error fetching pets:", error);
+        alert("An error occurred while fetching pets.");
     }
 };
 
 // Create pet profile card
-const createPetProfile = (type, name, age, history) => {
+const createPetProfile = (id, type, name, age, history, createdDate) => {
     const petItem = document.createElement("div");
     petItem.classList.add("pet-item", type);
+    petItem.dataset.id = id;
     petItem.dataset.type = type;
-    petItem.dataset.created = new Date().toLocaleString();
 
     petItem.innerHTML = `
-        <strong>${name}</strong> (${age} years old)
-        <button class="delete-button"></button>
-        <button class="edit-button"></button>
+        <strong>${name}</strong> (${age} years old, ${type})
+        <p>Medical History: ${history}</p>
+        <p>Created: ${createdDate || new Date().toLocaleString()}</p>
+        <button class="edit-button">Edit</button>
+        <button class="delete-button">Delete</button>
     `;
 
-    // Open the edit panel
+    // Edit pet profile
     petItem.querySelector(".edit-button").addEventListener("click", () => {
-        event.stopPropagation();
         addPanel.classList.remove("hidden");
         document.getElementById("petSelect").value = type;
         document.getElementById("petName").value = name;
@@ -58,75 +71,66 @@ const createPetProfile = (type, name, age, history) => {
             const updatedHistory = document.getElementById("medicalHistory").value.trim();
 
             if (!updatedType || !updatedName || isNaN(updatedAge) || updatedAge <= 0 || !updatedHistory) {
-                alert("Please fill all the blank, and age must be a positive number!");
+                alert("Please fill in all fields and ensure age is a positive number.");
                 return;
             }
 
-            // Update pet card data
-            petItem.classList.remove(type);
-            petItem.classList.add(updatedType);
-            petItem.dataset.type = updatedType;
-            petItem.innerHTML = `
-                <strong>${updatedName}</strong> (${updatedAge} years old)
-                <button class="delete-button"></button>
-                <button class="edit-button"></button>
-            `;
+            try {
+                const response = await fetch("../database/petSave.php?action=save_edits", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        id,
+                        type: updatedType,
+                        name: updatedName,
+                        age: updatedAge,
+                        medical_history: updatedHistory,
+                    }),
+                });
+                const result = await response.json();
 
-            petItem.querySelector(".delete-button").addEventListener("click", () => {
-                activityContainer.removeChild(petItem);
-                currentPets = currentPets.filter((pet) => pet !== petItem);
-            });
-
-            petItem.querySelector(".edit-button").addEventListener("click", () => {
-                event.stopPropagation();
-                addPanel.classList.remove("hidden");
-                document.getElementById("petSelect").value = updatedType;
-                document.getElementById("petName").value = updatedName;
-                document.getElementById("petAge").value = updatedAge;
-                document.getElementById("medicalHistory").value = updatedHistory;
-            });
-
-            addPanel.classList.add("hidden");
+                if (result.status === "success") {
+                    petItem.innerHTML = `
+                        <strong>${updatedName}</strong> (${updatedAge} years old, ${updatedType})
+                        <p>Medical History: ${updatedHistory}</p>
+                        <p>Created: ${petItem.dataset.created}</p>
+                        <button class="edit-button">Edit</button>
+                        <button class="delete-button">Delete</button>
+                    `;
+                    addPanel.classList.add("hidden");
+                } else {
+                    alert("Failed to update pet. Please try again.");
+                }
+            } catch (error) {
+                console.error("Error updating pet:", error);
+                alert("An error occurred. Please try again.");
+            }
         });
     });
 
-    petItem.addEventListener("click", (e) => {
-        if (e.target.classList.contains("delete-button")) return;
+    // Delete pet profile
+    petItem.querySelector(".delete-button").addEventListener("click", async () => {
+        if (!confirm("Are you sure you want to delete this pet?")) return;
 
-        infoPanel.classList.remove("hidden");
-        document.getElementById("infoType").textContent = `Type: ${type}`;
-        document.getElementById("infoName").textContent = `Name: ${name}`;
-        document.getElementById("infoAge").textContent = `Age: ${age}`;
-        document.getElementById("infoHistory").textContent = `Medical History: ${history}`;
-        document.getElementById("infoCreated").textContent = `Created: ${petItem.dataset.created}`;
-        document.getElementById("infoAccessed").textContent = `Last Accessed: ${new Date().toLocaleString()}`;
+        try {
+            const response = await fetch(`../database/petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
+            const result = await response.json();
+
+            if (result.status === "success") {
+                petItem.remove();
+            } else {
+                alert("Failed to delete pet. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error deleting pet:", error);
+            alert("An error occurred. Please try again.");
+        }
     });
 
-    petItem.querySelector(".delete-button").addEventListener("click", () => {
-        activityContainer.removeChild(petItem);
-        currentPets = currentPets.filter((pet) => pet !== petItem);
-    });
-
-    currentPets.push(petItem);
     activityContainer.appendChild(petItem);
 };
 
-// Add Pet
-addButton.addEventListener("click", async () => {
-    if (!await isLoggedIn()) {
-        alert("You must log in to access the pet profile feature!");
-        window.location.href = "../login/login.php";
-        return;
-    }
-    addPanel.classList.remove("hidden");
-    addPetForm.reset();
-});
-
-cancelButton.addEventListener("click", () => {
-    addPanel.classList.add("hidden");
-    addPetForm.reset();
-});
-
+// Save new pet
 saveButton.addEventListener("click", async () => {
     const type = document.getElementById("petSelect").value.trim();
     const name = document.getElementById("petName").value.trim();
@@ -134,40 +138,36 @@ saveButton.addEventListener("click", async () => {
     const history = document.getElementById("medicalHistory").value.trim();
 
     if (!type || !name || isNaN(age) || age <= 0 || !history) {
-        alert("Please fill all the blank, and age must be a positive number!");
+        alert("Please fill in all fields and ensure age is a positive number.");
         return;
     }
 
-    const petData = { type, name, age, history };
-    const response = await fetch('savePet.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(petData),
-    });
+    try {
+        const response = await fetch("../database/petSave.php?action=save_pet", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ type, name, age, medical_history: history }),
+        });
+        const result = await response.json();
 
-    const result = await response.json();
-    if (result.success) {
-        createPetProfile(type, name, age, history);
-        addPanel.classList.add("hidden");
-        addPetForm.reset();
-    } else {
-        alert("Failed to save pet information. Please try again!");
+        if (result.status === "success") {
+            createPetProfile(result.id, type, name, age, history);
+            addPanel.classList.add("hidden");
+            addPetForm.reset();
+        } else {
+            alert("Failed to save pet. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error saving pet:", error);
+        alert("An error occurred. Please try again.");
     }
 });
 
-// Close Pet Info Panel
-document.getElementById("close").addEventListener("click", () => {
-    infoPanel.classList.add("hidden");
+// Cancel adding a new pet
+cancelButton.addEventListener("click", () => {
+    addPanel.classList.add("hidden");
+    addPetForm.reset();
 });
 
-// Filter Pets
-filterSelect.addEventListener("change", () => {
-    const filterValue = filterSelect.value;
-    currentPets.forEach((pet) => {
-        if (filterValue === "all" || pet.dataset.type === filterValue) {
-            pet.style.display = "";
-        } else {
-            pet.style.display = "none";
-        }
-    });
-});
+// Redirect if not logged in and fetch pets
+checkLoginStatus().then(fetchPetsFromBackend);
