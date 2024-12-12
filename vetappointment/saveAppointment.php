@@ -1,27 +1,41 @@
 <?php
-session_start();
 header('Content-Type: application/json');
+include '../database/petConnect.php';
+session_start();
 
-$data = json_decode(file_get_contents('php://input'), true);
-
-// Validate inputs
-if (!$data || !isset($data['petId'], $data['date'], $data['time'], $data['reason'])) {
-    echo json_encode(['success' => false, 'error' => 'Invalid input data']);
+if (!isset($_SESSION['username'])) {
+    echo json_encode(["success" => false, "message" => "You must be logged in to book an appointment."]);
     exit;
 }
 
-try {
-    $db = new PDO('sqlite:vetappointments.sqlite');
-    $stmt = $db->prepare('INSERT INTO appointments (user_id, pet_id, date, time, reason) VALUES (?, ?, ?, ?, ?)');
-    $stmt->execute([
-        $_SESSION['user_id'],
-        $data['petId'], // Use pet ID
-        $data['date'],
-        $data['time'],
-        $data['reason'],
-    ]);
-    echo json_encode(['success' => true]);
-} catch (PDOException $e) {
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $petId = $data['petId'] ?? null;
+    $date = $data['date'] ?? null;
+    $time = $data['time'] ?? null;
+    $reason = $data['reason'] ?? null;
+
+    if (!$petId || !$date || !$time || !$reason) {
+        echo json_encode(["success" => false, "message" => "All fields are required."]);
+        exit;
+    }
+
+    try {
+        $stmt = $conn->prepare("INSERT INTO Appointments (petId, date, time, reason) VALUES (:petId, :date, :time, :reason)");
+        $stmt->bindValue(':petId', $petId, SQLITE3_INTEGER);
+        $stmt->bindValue(':date', $date, SQLITE3_TEXT);
+        $stmt->bindValue(':time', $time, SQLITE3_TEXT);
+        $stmt->bindValue(':reason', $reason, SQLITE3_TEXT);
+
+        if ($stmt->execute()) {
+            echo json_encode(["success" => true, "message" => "Appointment booked successfully!"]);
+        } else {
+            throw new Exception("Failed to save the appointment.");
+        }
+    } catch (Exception $e) {
+        echo json_encode(["success" => false, "message" => $e->getMessage()]);
+    }
+} else {
+    echo json_encode(["success" => false, "message" => "Invalid request method."]);
 }
 ?>
