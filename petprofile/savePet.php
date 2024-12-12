@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../databasepetConnect.php'; // Database connection
+require '../database/petConnect.php'; // Database connection
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_SESSION['user_id'])) {
