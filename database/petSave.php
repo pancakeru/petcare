@@ -1,53 +1,45 @@
 <?php
-require_once 'dbConnect.php';
 session_start();
 header('Content-Type: application/json');
 
-// Ensure the user is logged in
+// Debug: Log if the session user_id is not set
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in.']);
-    exit();
+    error_log("Session user_id not set");
+    echo json_encode(["success" => false, "message" => "User not logged in"]);
+    exit;
 }
 
-// Parse incoming JSON data
-$data = json_decode(file_get_contents('php://input'), true);
-$type = $data['type'] ?? '';
-$name = $data['name'] ?? '';
-age = $data['age'] ?? null;
-history = $data['history'] ?? '';
+if ($_GET['action'] === 'save_pet') {
+    $input = json_decode(file_get_contents("php://input"), true);
 
-if (!$type || !$name || is_null($age) || !$history) {
-    echo json_encode(['success' => false, 'message' => 'All fields are required.']);
-    exit();
-}
+    try {
+        // Debug: Log the input received
+        error_log("Received input: " . json_encode($input));
 
-try {
-    // Ensure the pets table exists
-    $sql = "CREATE TABLE IF NOT EXISTS pets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        type TEXT NOT NULL,
-        name TEXT NOT NULL,
-        age INTEGER NOT NULL,
-        medical_history TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-    )";
-    $conn->exec($sql);
+        $dbn = '../database/petcareDB.sqlite';
+        $db = new PDO("sqlite:" . $dbn);
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Insert pet data
-    $stmt = $conn->prepare("INSERT INTO pets (user_id, type, name, age, medical_history) VALUES (:user_id, :type, :name, :age, :history)");
-    $stmt->bindValue(':user_id', $_SESSION['user_id'], SQLITE3_INTEGER);
-    $stmt->bindValue(':type', $type, SQLITE3_TEXT);
-    $stmt->bindValue(':name', $name, SQLITE3_TEXT);
-    $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
-    $stmt->bindValue(':history', $history, SQLITE3_TEXT);
+        // Insert pet information
+        $stmt = $db->prepare('INSERT INTO pets (user_id, type, name, age, medical_history) VALUES (?, ?, ?, ?, ?)');
+        $stmt->execute([
+            $_SESSION['user_id'],
+            $input['type'],
+            $input['name'],
+            $input['age'],
+            $input['medical_history']
+        ]);
 
-    if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'message' => 'Pet saved successfully.']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to save pet data.']);
+        $petId = $db->lastInsertId(); // Get the inserted pet ID
+        echo json_encode(["success" => true, "id" => $petId]);
+    } catch (Exception $e) {
+        // Debug: Log the error message
+        error_log("Error saving pet: " . $e->getMessage());
+        echo json_encode(["success" => false, "message" => $e->getMessage()]);
     }
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+    exit;
 }
+
+// Invalid action fallback
+echo json_encode(["success" => false, "message" => "Invalid action"]);
 ?>
