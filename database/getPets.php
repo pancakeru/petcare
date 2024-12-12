@@ -18,6 +18,6 @@ $pets = [];
 while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
     $pets[] = $row;
 }
-
+header('Content-Type: application/json');
 echo json_encode($pets);
 ?>
