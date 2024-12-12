@@ -1,5 +1,5 @@
 <?php
-include 'dbConnect.php';
+include '../database/dbConnect.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
