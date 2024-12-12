@@ -10,6 +10,7 @@ body{
     justify-self: center;
     justify-items: center;
     margin-top: 10%;
+    gap: 4%;
 }
 
 #banner {
@@ -24,6 +25,7 @@ iframe {
 .gameIcon a {
     width: 15vw;
     height: 15vw;
+    margin: 3%;
 }
 
 .gameIcon img {
@@ -36,7 +38,7 @@ iframe {
 .gameIcon p {
     text-align: center;
     font-family: TitleFont;
-    font-size: 3vw;
+    font-size: 2vw;
     margin-top: 0%;
 }
 
