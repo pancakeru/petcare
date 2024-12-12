@@ -5,6 +5,10 @@ $dbname = '../database/petcareDB.sqlite';
 // Create connection
 $conn = new SQLite3($dbname);
 
+if (!$conn) {
+    die(json_encode(['success' => false, 'message' => 'Database connection failed.']));
+}
+
 // Create the Pets table if it does not exist
 $sql_pets = "CREATE TABLE IF NOT EXISTS Pets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
