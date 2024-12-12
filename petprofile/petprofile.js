@@ -11,7 +11,7 @@ let currentPets = [];
 
 // Check login status before adding a pet
 addButton.addEventListener("click", () => {
-    fetch("../login/checkLogin.php")
+    fetch("../database/checkLogin.php")
         .then(response => response.json())
         .then(data => {
             if (!data.loggedIn) {
