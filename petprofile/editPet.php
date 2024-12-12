@@ -2,7 +2,7 @@
 include '../database/dbConnect.php';
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['username'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in.']);
     exit;
 }
@@ -13,10 +13,10 @@ $name = $_POST['name'];
 $age = $_POST['age'];
 $history = $_POST['history'];
 
-$sql = "UPDATE Pets SET type = ?, name = ?, age = ?, history = ? WHERE id = ? AND user_id = ?";
+$sql = "UPDATE Pets SET type = ?, name = ?, age = ?, history = ? WHERE id = ? AND username = ?";
 $stmt = $pdo->prepare($sql);
 
-if ($stmt->execute([$type, $name, $age, $history, $pet_id, $_SESSION['user_id']])) {
+if ($stmt->execute([$type, $name, $age, $history, $pet_id, $_SESSION['username']])) {
     echo json_encode(['success' => true, 'message' => 'Pet updated successfully.']);
 } else {
     echo json_encode(['success' => false, 'message' => 'Error updating pet.']);
