@@ -1,38 +1,36 @@
 <?php
-session_start();
-require '../database/petConnect.php'; // Database connection
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_SESSION['user_id'])) {
-        $userId = $_SESSION['user_id'];
-        $type = $_POST['type'];
-        $name = $_POST['name'];
-        $age = $_POST['age'];
-        $history = $_POST['history'];
+require 'petConnect.php';
 
-        $sql = "INSERT INTO pets (user_id, type, name, age, medical_history) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("issis", $userId, $type, $name, $age, $history);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $type = $_POST['type'] ?? '';
+        $name = $_POST['name'] ?? '';
+        $age = $_POST['age'] ?? 0;
+        $history = $_POST['history'] ?? '';
 
-        if ($stmt->execute()) {
-            echo json_encode([
-                "success" => true,
-                "message" => "Pet profile added successfully!",
-                "pet_id" => $stmt->insert_id
-            ]);
-        } else {
-            echo json_encode([
-                "success" => false,
-                "message" => "Error adding pet profile."
-            ]);
+        if (empty($type) || empty($name) || empty($age) || empty($history)) {
+            throw new Exception("All fields are required.");
         }
 
-        $stmt->close();
-    } else {
-        echo json_encode([
-            "success" => false,
-            "message" => "You must log in to add a pet."
-        ]);
+        $stmt = $conn->prepare("INSERT INTO Pets (username, type, name, age, history) VALUES (:username, :type, :name, :age, :history)");
+        $stmt->bindValue(':username', 'testuser'); // Replace with the logged-in user
+        $stmt->bindValue(':type', $type);
+        $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':age', $age);
+        $stmt->bindValue(':history', $history);
+        $stmt->execute();
+
+        $response = ['success' => true, 'message' => 'Pet saved successfully!', 'pet_id' => $conn->lastInsertRowID()];
+    } catch (Exception $e) {
+        $response = ['success' => false, 'message' => $e->getMessage()];
     }
+
+    header('Content-Type: application/json');
+    echo json_encode($response);
+    exit;
 }
 ?>
