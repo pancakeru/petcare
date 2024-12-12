@@ -133,12 +133,9 @@ saveButton.addEventListener("click", () => {
     })
         .then((response) => response.json())
         .then((data) => {
-            if (data.success) {
-                alert("Pet saved successfully!");
-                loadPets(); // Reload the pets to reflect the new addition
-            } else {
-                alert("Error saving pet: " + data.error);
-            }
+            createPetProfile(type, name, age, history);
+            addPanel.classList.add("hidden");
+            addPetForm.reset();
         })
         .catch((error) => console.error("Error saving pet:", error));
 });
@@ -146,8 +143,14 @@ saveButton.addEventListener("click", () => {
 // Load pets from database on page load
 const loadPets = () => {
     fetch("../database/getPets.php")
-        .then((response) => response.json())
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then((data) => {
+            console.log("Raw data:", data); // Debug log
             if (data.success && data.pets && data.pets.length > 0) {
                 data.pets.forEach((pet) => {
                     createPetProfile(
@@ -155,10 +158,14 @@ const loadPets = () => {
                         pet.name,
                         pet.age,
                         pet.history,
-                        pet.created_at // Use the proper field name from the database
+                        pet.created_at // Match database column name
                     );
                 });
-            } 
+            } else if (!data.success) {
+                console.error("Error fetching pets:", data.error);
+            } else {
+                console.warn("No pets found for the current user.");
+            }
         })
         .catch((error) => console.error("Error fetching pets:", error));
 };
