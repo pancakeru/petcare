@@ -1,7 +1,20 @@
 <?php
     session_start();
-    require_once '../database/dbConnect.php';
+    require_once '../database/petConnect.php';
     $productName = ["dogFood" => "Dog Food", "hotdogBed" => "Hot Dog Bed"];
+
+    // Fetch pets from the database
+    $pets = [];
+    if(isset($_SESSION['username'])) {
+        $username = $_SESSION['username'];
+        $stmt = $conn->prepare("SELECT * FROM Pets WHERE username = :username ORDER BY created_at DESC");
+        $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $pets[] = $row;
+        }
+        $petCount = count($pets);
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +35,16 @@
             </div>
             <div class="two" id="petDescription">
                 <h2>Pet Description</h2>
-                <p>I like to eat chocolate even though I'm a dog</p>
+                <p>You have <?php echo $petCount; ?> pet(s).</p>
+                <div class="petList">
+                    <ul>
+                        <?php 
+                            foreach ($pets as $pet) {
+                                echo "<li>" . htmlspecialchars($pet['name']) . " - " . htmlspecialchars($pet['age']) . " years old" . "</li>";
+                            }
+                        ?>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="flexRow container" id="appointments">

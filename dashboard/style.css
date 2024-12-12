@@ -1,4 +1,4 @@
-body{
+body {
     background: rgb(226, 226, 226);
     font-family: Arial, sans-serif;
     margin: 0;
@@ -17,7 +17,7 @@ body{
     padding: 15px;
 }
 
-.container{
+.container {
     position: relative;
     padding: 15px;
     background-color: rgb(255, 255, 255);
@@ -27,7 +27,7 @@ body{
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for better design */
 }
 
-.flexRow{
+.flexRow {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap; /* Make it responsive */
@@ -54,6 +54,27 @@ body{
 }
 
 .list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+#petDescription .petList {
+    max-height: 125px; /* Adjust as needed */
+    overflow-y: auto;
+    padding: 0;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+}
+
+#petDescription .petList ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+#petDescription .petList li {
     padding: 5px 0;
     border-bottom: 1px solid #ddd;
 }
