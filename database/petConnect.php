@@ -24,7 +24,7 @@ try {
         age INTEGER NOT NULL,
         history TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (username) REFERENCES users(username)
+        FOREIGN KEY (username) REFERENCES user(username)
     )";
 
     // Execute the query to create the table
