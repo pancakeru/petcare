@@ -119,35 +119,29 @@ saveButton.addEventListener("click", () => {
     const history = document.getElementById("medicalHistory").value.trim();
 
     if (!type || !name || isNaN(age) || age <= 0 || !history) {
-        alert("Please fill all the blanks, and age must be a positive number!");
+        alert("Please fill all the blank, and age must be a positive number!");
         return;
     }
 
-    fetch("../database/petSave.php?action=save_pet", {
+    fetch("/savePet.php", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         },
-        body: JSON.stringify({ type, name, age, medical_history: history })
+        body: JSON.stringify({ type, name, age, history }),
     })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Response from server:", data);
+        .then((response) => response.json())
+        .then((data) => {
             if (data.success) {
                 createPetProfile(type, name, age, history);
                 addPanel.classList.add("hidden");
                 addPetForm.reset();
             } else {
-                alert(data.message || "Failed to save pet data.");
+                alert("Failed to save pet. Please try again.");
             }
         })
-        .catch(err => {
-            console.error("Error saving pet data:", err);
-            alert("An error occurred while saving the pet data. Please try again.");
-        });
+        .catch((error) => console.error("Error saving pet:", error));
 });
-
-
 
 
 // Close Pet Info Panel
