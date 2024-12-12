@@ -1,38 +1,31 @@
 <?php
-session_start();
-require '../database/petConnect.php'; // Database connection
+require_once '../database/dbConnect.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_SESSION['user_id'])) {
-        $userId = $_SESSION['user_id'];
-        $petId = $_POST['pet_id'];
-        $type = $_POST['type'];
-        $name = $_POST['name'];
-        $age = $_POST['age'];
-        $history = $_POST['history'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $petId = $_POST['pet_id'] ?? null;
+    $type = $_POST['type'] ?? '';
+    $name = $_POST['name'] ?? '';
+    $age = $_POST['age'] ?? '';
+    $history = $_POST['history'] ?? '';
 
-        $sql = "UPDATE pets SET type = ?, name = ?, age = ?, medical_history = ? WHERE id = ? AND user_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssisi", $type, $name, $age, $history, $petId, $userId);
+    if (!$petId || !$type || !$name || !$age || !$history) {
+        echo "Error: All fields are required.";
+        exit();
+    }
 
-        if ($stmt->execute()) {
-            echo json_encode([
-                "success" => true,
-                "message" => "Pet profile updated successfully!"
-            ]);
-        } else {
-            echo json_encode([
-                "success" => false,
-                "message" => "Error updating pet profile."
-            ]);
-        }
-
-        $stmt->close();
-    } else {
-        echo json_encode([
-            "success" => false,
-            "message" => "You must log in to edit a pet."
-        ]);
+    try {
+        $stmt = $conn->prepare("UPDATE Pets SET type = :type, name = :name, age = :age, history = :history WHERE id = :id");
+        $stmt->bindValue(':type', $type, SQLITE3_TEXT);
+        $stmt->bindValue(':name', $name, SQLITE3_TEXT);
+        $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
+        $stmt->bindValue(':history', $history, SQLITE3_TEXT);
+        $stmt->bindValue(':id', $petId, SQLITE3_INTEGER);
+        $stmt->execute();
+        echo "Success: Pet updated successfully.";
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+    } finally {
+        $conn->close();
     }
 }
 ?>
