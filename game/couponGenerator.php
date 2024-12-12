@@ -1,6 +1,10 @@
 <?php
 require_once '../database/dbConnect.php';
 
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+
 try {
     $db = new SQLite3('../database/my_database.sqlite');
 
