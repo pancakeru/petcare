@@ -1,5 +1,5 @@
 <?php
-include 'petConnect.php'; // Ensure this file correctly includes and configures the database connection
+include '../database/petConnect.php';
 session_start();
 
 // Enable error reporting for debugging
@@ -35,28 +35,28 @@ if (!is_numeric($age) || (int)$age <= 0) {
 try {
     // Prepare SQL statement
     $sql = "INSERT INTO Pets (username, type, name, age, history) VALUES (:username, :type, :name, :age, :history)";
-    $stmt = $conn->prepare($sql);
+    $stmt = $pdo->prepare($sql);
 
     // Bind parameters
-    $stmt->bindValue(':username', $username, SQLITE3_TEXT);
-    $stmt->bindValue(':type', $type, SQLITE3_TEXT);
-    $stmt->bindValue(':name', $name, SQLITE3_TEXT);
-    $stmt->bindValue(':age', (int)$age, SQLITE3_INTEGER);
-    $stmt->bindValue(':history', $history, SQLITE3_TEXT);
+    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+    $stmt->bindParam(':type', $type, PDO::PARAM_STR);
+    $stmt->bindParam(':name', $name, PDO::PARAM_STR);
+    $stmt->bindParam(':age', $age, PDO::PARAM_INT);
+    $stmt->bindParam(':history', $history, PDO::PARAM_STR);
 
     // Execute query
     if ($stmt->execute()) {
         echo json_encode([
             'success' => true,
-            'pet_id' => $conn->lastInsertRowID(),
+            'pet_id' => $pdo->lastInsertId(),
             'message' => 'Pet saved successfully.',
         ]);
     } else {
-        error_log("SQL Error: " . $conn->lastErrorMsg());
         echo json_encode(['success' => false, 'message' => 'Database error: Unable to save pet.']);
     }
-} catch (Exception $e) {
+} catch (PDOException $e) {
     // Handle exceptions
-    error_log("Exception: " . $e->getMessage());
+    error_log("PDOException: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Internal server error.']);
 }
+?>
