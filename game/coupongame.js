@@ -371,26 +371,30 @@ inCorner = true;
 }
 
 function resetting() {
-    for (let i = 0; i < trash.length; i++) {
-        let temp = trash[trash.length - 1];
+    for (let i = trash.length - 1; i >= 0; i--) {
+        let temp = trash[i];
         cards.push(temp);
         trash.pop(temp);
     }
- //  console.log(cards);
-
+     console.log(cards);
 
     for (let i = cards.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [cards[i], cards[j]] = [cards[j], cards[i]];
       }
 
+      bruh();
+      gameReset = false;
+}
+
+function bruh() {
+    //not working
     for (let i = 0; i < cards.length; i++) {
         let temp = cards[i];
         temp.targetX = width/10;
         temp.targetY = 450 - cards.indexOf(temp) * sep;
         temp.moving = true;
-        temp.delay = 10 + i * 10;
+       // temp.delay = 10 + i * 10;
        // console.log(temp.x, temp.y);
     }
-
 }
