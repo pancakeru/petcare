@@ -119,7 +119,7 @@ saveButton.addEventListener("click", () => {
     const history = document.getElementById("medicalHistory").value.trim();
 
     if (!type || !name || isNaN(age) || age <= 0 || !history) {
-        alert("Please fill all the blank, and age must be a positive number!");
+        alert("Please fill all the blanks, and age must be a positive number!");
         return;
     }
 
@@ -132,6 +132,7 @@ saveButton.addEventListener("click", () => {
     })
         .then(response => response.json())
         .then(data => {
+            console.log(data); // Debugging: Log the response
             if (data.success) {
                 createPetProfile(type, name, age, history);
                 addPanel.classList.add("hidden");
@@ -142,6 +143,7 @@ saveButton.addEventListener("click", () => {
         })
         .catch(err => console.error("Error saving pet data:", err));
 });
+
 
 // Close Pet Info Panel
 document.getElementById("close").addEventListener("click", () => {
