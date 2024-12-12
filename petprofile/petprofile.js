@@ -104,7 +104,7 @@ const createPetProfile = (type, name, age, history) => {
 addButton.addEventListener("click", async () => {
     if (!await isLoggedIn()) {
         alert("You must log in to access the pet profile feature!");
-        window.location.href = "login.html";
+        window.location.href = "../login/login.php";
         return;
     }
     addPanel.classList.remove("hidden");
