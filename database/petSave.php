@@ -1,41 +1,30 @@
-// Create testSession.php
 <?php
 session_start();
+header('Content-Type: application/json');
+
 if (!isset($_SESSION['user_id'])) {
-    $_SESSION['user_id'] = 1; // Example user_id
-    echo "Session started. User ID set to 1.";
-} else {
-    echo "Session exists. User ID is " . $_SESSION['user_id'];
+    echo json_encode(['success' => false, 'error' => 'Not logged in']);
+    exit;
 }
-?>
 
-
-// Get the input data
 $data = json_decode(file_get_contents('php://input'), true);
-
-if (!$data || !isset($data['type'], $data['name'], $data['age'], $data['medical_history'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid input data']);
-    exit();
+if (!$data || !isset($data['type'], $data['name'], $data['age'], $data['history'])) {
+    echo json_encode(['success' => false, 'error' => 'Invalid data']);
+    exit;
 }
 
 try {
-    // Database connection
-    $db = new PDO('sqlite:../database/petcareDB.sqlite'); // Adjust the path
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Insert pet data into the database
-    $stmt = $db->prepare('INSERT INTO pets (user_id, type, name, age, medical_history) VALUES (:user_id, :type, :name, :age, :medical_history)');
+    $db = new PDO('sqlite:petcareDB.sqlite');
+    $stmt = $db->prepare('INSERT INTO pets (user_id, type, name, age, history) VALUES (?, ?, ?, ?, ?)');
     $stmt->execute([
-        ':user_id' => $_SESSION['user_id'],
-        ':type' => $data['type'],
-        ':name' => $data['name'],
-        ':age' => $data['age'],
-        ':medical_history' => $data['medical_history']
+        $_SESSION['user_id'],
+        $data['type'],
+        $data['name'],
+        $data['age'],
+        $data['history'],
     ]);
-
     echo json_encode(['success' => true]);
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-    exit();
+} catch (PDOException $e) {
+    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
 }
 ?>
