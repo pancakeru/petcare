@@ -123,7 +123,7 @@ saveButton.addEventListener("click", () => {
         return;
     }
 
-    fetch("/savePet.php", {
+    fetch("../database/petSave.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
