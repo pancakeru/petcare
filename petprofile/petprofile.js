@@ -145,19 +145,15 @@ const loadPets = () => {
     fetch("../database/getPets.php")
         .then((response) => response.json())
         .then((data) => {
-            if (data.success) {
-                data.pets.forEach((pet) => {
-                    createPetProfile(
-                        pet.type,
-                        pet.name,
-                        pet.age,
-                        pet.history,
-                        pet.created
-                    );
-                });
-            } else {
-                console.error("Failed to load pets:", data.error);
-            }
+            data.pets.forEach((pet) => {
+                createPetProfile(
+                    pet.type,
+                    pet.name,
+                    pet.age,
+                    pet.history,
+                    pet.created
+                );
+            });
         })
         .catch((error) => console.error("Error fetching pets:", error));
 };
