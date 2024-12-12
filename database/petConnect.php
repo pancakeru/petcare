@@ -1,6 +1,6 @@
 <?php
 function petConnect() {
-    $db = new PDO('../database/sqlite:petcare.sqlite');
+    $db = new PDO('sqlite:petcare.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // pet table
