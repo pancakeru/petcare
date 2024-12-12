@@ -106,8 +106,8 @@ const createPetProfile = (type, name, age, history, id = null) => {
             petItem.classList.add(updatedType);
             petItem.innerHTML = `
                 <strong>${updatedName}</strong> (${updatedAge} years old)
-                <button class="delete-button">Delete</button>
-                <button class="edit-button">Edit</button>
+                <button class="delete-button"></button>
+                <button class="edit-button"></button>
             `;
             addPanel.classList.add("hidden");
         });
