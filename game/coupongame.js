@@ -24,6 +24,9 @@ let recycling = false;
 let recycleTimer = 100;
 let gameReset = false;
 let inCorner = false;
+let anotherBool = false;
+let resetTimer = 50;
+let lmao = false;
 
 function preload() {
     rockSprite = loadImage("assets/coupon/rockcard.png");
@@ -133,6 +136,14 @@ function draw() {
         resetting();
      }
 
+     if(lmao) {
+        resetTimer--;
+            if (resetTimer <= 0) {
+                Deal();
+                lmao = false;
+            }
+     }
+
      
 }
 
@@ -220,6 +231,10 @@ class Card {
             if (trash.includes(this) && trash.indexOf(this) == 23 && inCorner) {
                 gameReset = true;
                 inCorner = false;
+            }
+
+            if (anotherBool && cards.indexOf(this) == 23) {
+                lmao = true;
             }
 
             this.moving = false;
@@ -397,4 +412,6 @@ function bruh() {
        // temp.delay = 10 + i * 10;
        // console.log(temp.x, temp.y);
     }
+    resetTimer = 50;
+    anotherBool = true;
 }
