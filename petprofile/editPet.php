@@ -1,31 +1,25 @@
 <?php
-require_once '../database/dbConnect.php';
+session_start();
+header('Content-Type: application/json');
+include '../database/petConnect.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $petId = $_POST['pet_id'] ?? null;
-    $type = $_POST['type'] ?? '';
-    $name = $_POST['name'] ?? '';
-    $age = $_POST['age'] ?? '';
-    $history = $_POST['history'] ?? '';
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(["success" => false, "message" => "User not logged in."]);
+    exit;
+}
 
-    if (!$petId || !$type || !$name || !$age || !$history) {
-        echo "Error: All fields are required.";
-        exit();
-    }
+$data = json_decode(file_get_contents('php://input'), true);
+$id = $data['id'];
+$type = $data['type'];
+$name = $data['name'];
+$age = $data['age'];
+$history = $data['history'];
 
-    try {
-        $stmt = $conn->prepare("UPDATE Pets SET type = :type, name = :name, age = :age, history = :history WHERE id = :id");
-        $stmt->bindValue(':type', $type, SQLITE3_TEXT);
-        $stmt->bindValue(':name', $name, SQLITE3_TEXT);
-        $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
-        $stmt->bindValue(':history', $history, SQLITE3_TEXT);
-        $stmt->bindValue(':id', $petId, SQLITE3_INTEGER);
-        $stmt->execute();
-        echo "Success: Pet updated successfully.";
-    } catch (Exception $e) {
-        echo "Error: " . $e->getMessage();
-    } finally {
-        $conn->close();
-    }
+try {
+    $stmt = $db->prepare("UPDATE pets SET type = ?, name = ?, age = ?, history = ? WHERE id = ? AND user_id = ?");
+    $stmt->execute([$type, $name, $age, $history, $id, $_SESSION['user_id']]);
+    echo json_encode(["success" => true]);
+} catch (PDOException $e) {
+    echo json_encode(["success" => false, "message" => $e->getMessage()]);
 }
 ?>
