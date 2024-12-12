@@ -31,15 +31,15 @@ function preload() {
 function setup() {
     createCanvas(800, 600);
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
         cards.push(new Card(rockSprite));
     }
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
         cards.push(new Card(paperSprite));
     }
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
         cards.push(new Card(scissorSprite));
     }
 
@@ -98,6 +98,18 @@ function draw() {
         discard();
         evalTimer = 100;
     }
+
+    if(discarding) {
+        // console.log(discarding);
+         for (let i = 0; i < trash.length; i++) {
+             if (trash[i].moving) {
+                 return;
+             }
+         } 
+ 
+         Deal();
+         discarding = false;
+     }
 }
 
 class Card {
@@ -246,6 +258,8 @@ function Deal() {
         player.push(temp);
         cards.pop(temp);
     }
+
+    //console.log(player);
 }
 
 function AIPlay() {
@@ -256,7 +270,7 @@ function AIPlay() {
     selected.moving = true;
     selected.AICard = true;
     pool.push(selected.face);
-    console.log(AI);
+   // console.log(AI);
 }
 
 function evaluate() {
@@ -312,4 +326,5 @@ function discard() {
         player.pop(c);
     }
 
+    inPlay = false;
 }
