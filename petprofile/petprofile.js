@@ -1,4 +1,3 @@
-// DOM Elements
 const addButton = document.getElementById("add");
 const addPanel = document.getElementById("panelAdd");
 const addPetForm = document.getElementById("addPetForm");
