@@ -1,83 +1,39 @@
 <?php
-
-// Path to the SQLite database file
-$dbname = '../database/petcareDB.sqlite';
-
-// Check if the database file exists
-if (!file_exists($dbname)) {
-    die(json_encode([
-        'success' => false,
-        'message' => 'Database file does not exist. Please make sure the database is set up properly.'
-    ]));
-}
-
-// Check if the database file is writable
-if (!is_writable($dbname)) {
-    die(json_encode([
-        'success' => false,
-        'message' => 'Database file is not writable. Check file and directory permissions.'
-    ]));
-}
-
-// Check if the directory containing the database file is writable
-if (!is_writable(dirname($dbname))) {
-    die(json_encode([
-        'success' => false,
-        'message' => 'Database directory is not writable. Check directory permissions.'
-    ]));
-}
-
 try {
-    // Create connection to the SQLite database
-    $conn = new SQLite3($dbname);
-
-    // Enable foreign key constraints
+    // Establish a database connection
+    $conn = new SQLite3('../database/petcareDB.sqlite', SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
     $conn->exec('PRAGMA foreign_keys = ON;');
 
-    // Create the Pets table
-    $sql_pets = "CREATE TABLE IF NOT EXISTS Pets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL,
-        type TEXT NOT NULL,
-        name TEXT NOT NULL,
-        age INTEGER NOT NULL,
-        history TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (username) REFERENCES users(username)
-    )";
-    if (!$conn->exec($sql_pets)) {
-        die(json_encode([
-            'success' => false,
-            'message' => "Error creating table 'Pets': " . $conn->lastErrorMsg()
-        ]));
-    }
+    // Create the `Pets` table if it doesn't already exist
+    $createPetsTable = "
+        CREATE TABLE IF NOT EXISTS Pets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            type TEXT NOT NULL,
+            name TEXT NOT NULL,
+            age INTEGER NOT NULL,
+            history TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ";
+    $conn->exec($createPetsTable);
 
-    // Create the Users table
-    $sql_users = "CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL,
-        email TEXT NOT NULL UNIQUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )";
-    if (!$conn->exec($sql_users)) {
-        die(json_encode([
-            'success' => false,
-            'message' => "Error creating table 'users': " . $conn->lastErrorMsg()
-        ]));
-    }
+    // Optionally, you can create other tables if required
+    // For example, a `Users` table:
+    $createUsersTable = "
+        CREATE TABLE IF NOT EXISTS Users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ";
+    $conn->exec($createUsersTable);
 
-    // Return a success message if everything is set up correctly
-    echo json_encode([
-        'success' => true,
-        'message' => 'Database connection and setup successful.'
-    ]);
+    // Do not output anything for successful execution
 } catch (Exception $e) {
-    // Catch any errors during connection or execution
-    die(json_encode([
-        'success' => false,
-        'message' => 'Error: ' . $e->getMessage()
-    ]));
+    // Output the error as JSON and terminate
+    die(json_encode(["success" => false, "message" => "Database connection failed: " . $e->getMessage()]));
 }
-
 ?>
