@@ -140,6 +140,18 @@ saveButton.addEventListener("click", () => {
         .catch((error) => console.error("Error saving pet:", error));
 });
 
+// Fetch pets from the server on page load
+document.addEventListener("DOMContentLoaded", () => {
+    fetch("../database/getPets.php")
+        .then((response) => response.json())
+        .then((pets) => {
+            pets.forEach((pet) => {
+                createPetProfile(pet.type, pet.name, pet.age, pet.history);
+            });
+        })
+        .catch((error) => console.error("Error fetching pets:", error));
+});
+
 // Close Pet Info Panel
 document.getElementById("close").addEventListener("click", () => {
     infoPanel.classList.add("hidden");
