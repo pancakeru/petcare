@@ -43,7 +43,7 @@ const createPetProfile = (id, type, name, age, history) => {
                 return;
             }
 
-            fetch("../database/editPet.php", {
+            fetch("editPet.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: new URLSearchParams({
@@ -75,7 +75,7 @@ const createPetProfile = (id, type, name, age, history) => {
 
     // Delete button functionality
     petItem.querySelector(".delete-button").addEventListener("click", () => {
-        fetch("../database/deletePet.php", {
+        fetch("deletePet.php", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({ pet_id: petItem.dataset.id }),
@@ -123,7 +123,7 @@ saveButton.addEventListener("click", () => {
         return;
     }
 
-    fetch("../database/savePet.php", {
+    fetch("savePet.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ type, name, age, history }),
