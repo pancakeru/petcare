@@ -8,21 +8,20 @@ const infoPanel = document.getElementById("petinfo");
 const filterSelect = document.getElementById("filter");
 let currentPets = [];
 
-// Check login before showing the add panel
+// Add Pet and check log in
 addButton.addEventListener("click", () => {
-    fetch('../database/checkLogin.php')
+    fetch("../database/checkLogin.php")
         .then(response => response.json())
         .then(data => {
             if (data.loggedIn) {
                 addPanel.classList.remove("hidden");
                 addPetForm.reset();
-                
             } else {
                 alert("You must log in to add a pet!");
-                window.location.href = '../login/login.php';
+                window.location.href = "../login/login.php";
             }
         })
-        .catch(error => console.error("Error checking login:", error));
+        .catch(err => console.error("Error checking session:", err));
 });
 
 // Create pet profile card
