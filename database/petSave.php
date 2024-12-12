@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Not logged in']);
     exit();
 }
@@ -18,9 +18,9 @@ try {
     $db = new PDO('sqlite:database/petcareDB.sqlite');
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    $stmt = $db->prepare('INSERT INTO pets (username, type, name, age, history) VALUES (:username, :type, :name, :age, :history)');
+    $stmt = $db->prepare('INSERT INTO pets (user_id, type, name, age, history) VALUES (:user_id, :type, :name, :age, :history)');
     $stmt->execute([
-        ':username' => $_SESSION['username'],
+        ':user_id' => $_SESSION['user_id'],
         ':type' => $data['type'],
         ':name' => $data['name'],
         ':age' => $data['age'],
