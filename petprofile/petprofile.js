@@ -158,11 +158,7 @@ const loadPets = () => {
                         pet.created_at // Use the proper field name from the database
                     );
                 });
-            } else if (!data.success) {
-                console.error("Error fetching pets:", data.error);
-            } else {
-                console.warn("No pets found for the current user.");
-            }
+            } 
         })
         .catch((error) => console.error("Error fetching pets:", error));
 };
