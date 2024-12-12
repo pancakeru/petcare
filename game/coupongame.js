@@ -428,7 +428,7 @@ function awardCoupon() {
     let couponCode = 'COUPON-' + Math.random().toString(36).substring(2, 10).toUpperCase();
 
     //send coupon code to server
-    fetch('save_coupon.php', {
+    fetch('couponGenerator.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ coupon: couponCode })
