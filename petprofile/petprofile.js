@@ -47,17 +47,24 @@ saveButton.addEventListener("click", () => {
         method: "POST",
         body: formData,
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
+    .then(response => response.text()) 
+    .then(data => {
+        try {
+            const json = JSON.parse(data); 
+            if (json.success) {
+                alert(json.message);
                 createPetProfile(type, name, age, history);
                 addPanel.classList.add("hidden");
                 addPetForm.reset();
             } else {
-                alert(data.message);
+                alert("Error: " + json.message);
             }
-        });
+        } catch (error) {
+            console.error("Invalid JSON response:", data);
+            alert("Unexpected server response. Please check the console for details.");
+        }
+    })
+    .catch(error => console.error("Fetch error:", error));
 });
 
 // Create a pet profile card
