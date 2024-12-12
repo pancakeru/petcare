@@ -150,6 +150,7 @@ const loadPets = () => {
             return response.json();
         })
         .then((data) => {
+            console.log("Raw data:", data);
             if (data.pets) {
                 data.pets.forEach((pet) => {
                     createPetProfile(
