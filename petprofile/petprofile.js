@@ -123,7 +123,7 @@ saveButton.addEventListener("click", () => {
         return;
     }
 
-    fetch("../database/savePet.php", {
+    fetch("../database/petSave.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -143,6 +143,7 @@ saveButton.addEventListener("click", () => {
         })
         .catch(err => console.error("Error saving pet data:", err));
 });
+
 
 
 // Close Pet Info Panel
