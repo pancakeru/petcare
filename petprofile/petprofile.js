@@ -13,11 +13,13 @@ addButton.addEventListener("click", () => {
     fetch('../database/checkLogin.php')
         .then(response => response.json())
         .then(data => {
-            if (!data.loggedIn) {
-                window.location.href = '../login/login.php';
-            } else {
+            if (data.loggedIn) {
                 addPanel.classList.remove("hidden");
                 addPetForm.reset();
+                
+            } else {
+                alert("You must log in to add a pet!");
+                window.location.href = '../login/login.php';
             }
         })
         .catch(error => console.error("Error checking login:", error));
