@@ -1,0 +1,219 @@
+body{
+    background: rgb(226, 226, 226);
+    margin: 0%;
+    padding: 0%;
+}
+
+/* Position the petFilter container */
+.petFilter {
+    position: absolute;
+    margin-top: 20px;
+    left: 100px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+/* Style the filter dropdown */
+#filter {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* Style the add button */
+#add {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+#add img {
+    width: 50px;
+    height: 50px;
+    transition: transform 0.2s ease;
+}
+
+#add img:hover {
+    transform: scale(1.1);
+}
+
+/* Add hidden panel styling */
+.hidden {
+    display: none;
+}
+
+/* Styling for the pet info panel */
+#panelAdd,
+#petinfo {
+    max-width: 800px;
+    width: 90%;
+    max-height: 400px;
+    height: 90%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* Overlay styling */
+#panelAdd.hidden,
+#petinfo.hidden {
+    display: none;
+}
+
+/* Button styles */
+button {
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+#save{
+    background-color: #28a745;
+    color: #fff;
+}
+
+#save:hover{
+    background-color: #218838
+}
+
+#cancel{
+    background-color: #007bff;
+    color: #fff;
+}
+
+#cancel:hover{
+    background-color: #0056b3;
+}
+
+/* Add form input styling */
+form input,
+form select,
+form textarea {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+form textarea {
+    resize: none;
+}
+
+/* Styling for the pet activity container */
+#activity {
+    margin-top: 65px;
+    margin-left: 100px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: flex-start;
+}
+
+.pet-item {
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    height: 200px;
+    width: 200px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    background-blend-mode: overlay;
+}
+
+.pet-item.dog {
+    background-image: url('../images/petprofile/dogbackground.jpg');
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.pet-item.cat {
+    background-image: url('../images/petprofile/catbackground.jpg');
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Delete Button */
+.delete-button {
+    background: url('../images/petprofile/delete_button.png') no-repeat center;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-size: contain;
+    border: none;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    display: none;
+}
+
+.pet-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pet-item:hover .delete-button {
+    display: block;
+}
+
+/* Close Button */
+
+#close{
+    background-color: #007bff;
+    color: #fff;
+}
+
+#close:hover{
+    background-color:#0056b3;
+}
+
+
+/* Edit Button */
+.edit-button {
+    background: url('../images/petprofile/edit_button.png') no-repeat center;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-size: contain;
+    border: none;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    display: none;
+}
+
+.pet-item:hover .edit-button {
+    display: block;
+}
+
+#banner {
+    background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6)), 
+    url('../images/petprofileimg.jpg');
+}
