@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dateInput.setAttribute("min", formattedToday);
 
     // Load pets from server
-    fetch("getPets.php")
+    fetch("getPet.php")
         .then((response) => response.json())
         .then((data) => {
             if (data.success) {
