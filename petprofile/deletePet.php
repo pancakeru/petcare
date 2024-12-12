@@ -1,34 +1,23 @@
 <?php
-session_start();
-require '../database/petConnect.php'; // Database connection
+require_once '../database/dbConnect.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_SESSION['user_id'])) {
-        $userId = $_SESSION['user_id'];
-        $petId = $_POST['pet_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $petId = $_POST['pet_id'] ?? null;
 
-        $sql = "DELETE FROM pets WHERE id = ? AND user_id = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ii", $petId, $userId);
+    if (!$petId) {
+        echo "Error: Missing pet ID.";
+        exit();
+    }
 
-        if ($stmt->execute()) {
-            echo json_encode([
-                "success" => true,
-                "message" => "Pet profile deleted successfully!"
-            ]);
-        } else {
-            echo json_encode([
-                "success" => false,
-                "message" => "Error deleting pet profile."
-            ]);
-        }
-
-        $stmt->close();
-    } else {
-        echo json_encode([
-            "success" => false,
-            "message" => "You must log in to delete a pet."
-        ]);
+    try {
+        $stmt = $conn->prepare("DELETE FROM Pets WHERE id = :id");
+        $stmt->bindValue(':id', $petId, SQLITE3_INTEGER);
+        $stmt->execute();
+        echo "Success: Pet deleted successfully.";
+    } catch (Exception $e) {
+        echo "Error: " . $e->getMessage();
+    } finally {
+        $conn->close();
     }
 }
 ?>
