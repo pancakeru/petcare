@@ -76,8 +76,8 @@ const createPetProfile = (type, name, age, history, id = null) => {
 
     petItem.innerHTML = `
         <strong>${name}</strong> (${age} years old)
-        <button class="delete-button">Delete</button>
-        <button class="edit-button">Edit</button>
+        <button class="delete-button"></button>
+        <button class="edit-button"></button>
     `;
 
     // Open edit panel
