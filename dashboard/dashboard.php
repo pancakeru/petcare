@@ -1,6 +1,6 @@
 <?php
     session_start();
-
+    require_once '../database/dbConnect.php';
     $productName = ["dogFood" => "Dog Food", "hotdogBed" => "Hot Dog Bed"];
 ?>
 <!DOCTYPE html>
