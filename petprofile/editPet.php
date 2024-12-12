@@ -1,41 +1,38 @@
 <?php
 session_start();
-require_once 'petConnect.php';
+require 'petConnect.php'; // Database connection
 
-header('Content-Type: application/json');
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_SESSION['user_id'])) {
+        $userId = $_SESSION['user_id'];
+        $petId = $_POST['pet_id'];
+        $type = $_POST['type'];
+        $name = $_POST['name'];
+        $age = $_POST['age'];
+        $history = $_POST['history'];
 
-if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] !== true) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in.']);
-    exit;
-}
+        $sql = "UPDATE pets SET type = ?, name = ?, age = ?, medical_history = ? WHERE id = ? AND user_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssisi", $type, $name, $age, $history, $petId, $userId);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_SESSION['username'] ?? null;
-    $petId = intval($_POST['pet_id'] ?? 0);
-    $type = trim($_POST['type'] ?? '');
-    $name = trim($_POST['name'] ?? '');
-    $age = intval($_POST['age'] ?? 0);
-    $history = trim($_POST['history'] ?? '');
+        if ($stmt->execute()) {
+            echo json_encode([
+                "success" => true,
+                "message" => "Pet profile updated successfully!"
+            ]);
+        } else {
+            echo json_encode([
+                "success" => false,
+                "message" => "Error updating pet profile."
+            ]);
+        }
 
-    if (empty($username) || $petId <= 0 || empty($type) || empty($name) || $age <= 0 || empty($history)) {
-        echo json_encode(['success' => false, 'message' => 'All fields are required, and age must be a positive number.']);
-        exit;
-    }
-
-    $stmt = $conn->prepare("UPDATE Pets SET type = :type, name = :name, age = :age, history = :history WHERE id = :pet_id AND username = :username");
-    $stmt->bindValue(':type', $type, SQLITE3_TEXT);
-    $stmt->bindValue(':name', $name, SQLITE3_TEXT);
-    $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
-    $stmt->bindValue(':history', $history, SQLITE3_TEXT);
-    $stmt->bindValue(':pet_id', $petId, SQLITE3_INTEGER);
-    $stmt->bindValue(':username', $username, SQLITE3_TEXT);
-
-    if ($stmt->execute() && $conn->changes() > 0) {
-        echo json_encode(['success' => true, 'message' => 'Pet updated successfully!']);
+        $stmt->close();
     } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to update the pet or pet not found.']);
+        echo json_encode([
+            "success" => false,
+            "message" => "You must log in to edit a pet."
+        ]);
     }
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
 }
 ?>
