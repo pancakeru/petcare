@@ -131,14 +131,10 @@ saveButton.addEventListener("click", () => {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                createPetProfile(data.pet_id, type, name, age, history);
-                addPanel.classList.add("hidden");
-                addPetForm.reset();
-                alert(data.message);
-            } else {
-                alert(data.message);
-            }
+            createPetProfile(data.pet_id, type, name, age, history);
+            addPanel.classList.add("hidden");
+            addPetForm.reset();
+            alert(data.message);
         })
         .catch(err => console.error("Error saving pet:", err));
 });
