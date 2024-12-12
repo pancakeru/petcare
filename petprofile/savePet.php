@@ -1,3 +1,6 @@
+var_dump($_POST);
+exit;
+
 <?php
 session_start();
 require_once 'petConnect.php';
