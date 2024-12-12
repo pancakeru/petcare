@@ -29,9 +29,9 @@ let resetTimer = 50;
 let lmao = false;
 
 function preload() {
-    rockSprite = loadImage("assets/coupon/rockcard.png");
-    paperSprite = loadImage("assets/coupon/papercard.png");
-    scissorSprite = loadImage("assets/coupon/scissorscard.png");
+    rockSprite = loadImage("assets/coupon/rat.png");
+    paperSprite = loadImage("assets/coupon/cat.png");
+    scissorSprite = loadImage("assets/coupon/dog.png");
     cardbackSprite = loadImage("assets/coupon/cardback.png");
 }
 
