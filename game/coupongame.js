@@ -19,6 +19,7 @@ let statScreen = false;
 let outcome = "";
 
 let trash = [];
+let discarding = false;
 
 function preload() {
     rockSprite = loadImage("assets/coupon/rockcard.png");
@@ -67,6 +68,13 @@ function draw() {
         }
     }
 
+    for (let c of trash) {
+        c.display();
+        if (c.moving) {
+            c.checkMove();
+        }
+    }
+
     for (let c of player) {
         c.display();
         if (c.moving) {
@@ -75,13 +83,6 @@ function draw() {
 
         if(c.inHand) {
             c.hover();
-        }
-    }
-
-    for (let c of trash) {
-        c.display();
-        if (c.moving) {
-            c.checkMove();
         }
     }
 
@@ -286,21 +287,23 @@ function evaluate() {
 }
 
 function discard() {
+    discarding = true;
     pool = [];
 
     for (let i = 0; i < 3; i++) {
-        let c = AI[0];
-        console.log(c);
+        let c = AI[AI.length -1];
+       // console.log(c);
         c.targetX = width/10 * 9;
         c.targetY = height/2;
         c.delay = 10 + i*10;
         c.moving = true;
+        c.AICard = false;
         trash.push(c);
         AI.pop(c);
     }
 
     for (let i = 0; i < 3; i++) {
-        let c = player[0];
+        let c = player[player.length -1];
         c.targetX = width/10 * 9;
         c.targetY = height/2;
         c.delay = 10 + (i+3)*10;
