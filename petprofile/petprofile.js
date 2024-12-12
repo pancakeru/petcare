@@ -129,26 +129,18 @@ saveButton.addEventListener("click", () => {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ type, name, age, history }),
     })
-        .then(response => response.text())
-        .then(text => {
-            try {
-                const data = JSON.parse(text);
-                if (data.success) {
-                    createPetProfile(data.pet_id, type, name, age, history);
-                    addPanel.classList.add("hidden");
-                    addPetForm.reset();
-                    alert(data.message);
-                } else {
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error("Error parsing JSON:", error);
-                console.error("Response text:", text);
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                createPetProfile(data.pet_id, type, name, age, history);
+                addPanel.classList.add("hidden");
+                addPetForm.reset();
+                alert(data.message);
+            } else {
+                alert(data.message);
             }
         })
-        .catch(error => {
-            console.error("Fetch error:", error);
-        });
+        .catch(err => console.error("Error saving pet:", err));
 });
 
 // Cancel Add Pet
