@@ -123,16 +123,16 @@ saveButton.addEventListener("click", () => {
         return;
     }
 
-    fetch("../database/petSave.php", {
+    fetch("../database/petSave.php?action=save_pet", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ type, name, age, history })
+        body: JSON.stringify({ type, name, age, medical_history: history })
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data); // Debugging: Log the response
+            console.log("Response from server:", data);
             if (data.success) {
                 createPetProfile(type, name, age, history);
                 addPanel.classList.add("hidden");
@@ -141,8 +141,12 @@ saveButton.addEventListener("click", () => {
                 alert(data.message || "Failed to save pet data.");
             }
         })
-        .catch(err => console.error("Error saving pet data:", err));
+        .catch(err => {
+            console.error("Error saving pet data:", err);
+            alert("An error occurred while saving the pet data. Please try again.");
+        });
 });
+
 
 
 
