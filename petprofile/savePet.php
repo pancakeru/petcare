@@ -1,57 +1,38 @@
-var_dump($_POST);
-exit;
-
 <?php
 session_start();
-require_once 'petConnect.php';
+require 'petConnect.php'; // Database connection
 
-header('Content-Type: application/json');
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_SESSION['user_id'])) {
+        $userId = $_SESSION['user_id'];
+        $type = $_POST['type'];
+        $name = $_POST['name'];
+        $age = $_POST['age'];
+        $history = $_POST['history'];
 
-// Ensure the user is logged in
-if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] !== true) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in.']);
-    exit;
-}
-
-// Validate session username
-if (!isset($_SESSION['username'])) {
-    echo json_encode(['success' => false, 'message' => 'Session username not set.']);
-    exit;
-}
-$username = $_SESSION['username'];
-
-// Process POST request
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $type = trim($_POST['type'] ?? '');
-    $name = trim($_POST['name'] ?? '');
-    $age = intval($_POST['age'] ?? 0);
-    $history = trim($_POST['history'] ?? '');
-
-    // Validate input
-    if (empty($type) || empty($name) || $age <= 0 || empty($history)) {
-        echo json_encode(['success' => false, 'message' => 'All fields are required, and age must be a positive number.']);
-        exit;
-    }
-
-    // Insert the pet into the database
-    try {
-        $stmt = $conn->prepare("INSERT INTO Pets (username, type, name, age, history) VALUES (:username, :type, :name, :age, :history)");
-        $stmt->bindValue(':username', $username, SQLITE3_TEXT);
-        $stmt->bindValue(':type', $type, SQLITE3_TEXT);
-        $stmt->bindValue(':name', $name, SQLITE3_TEXT);
-        $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
-        $stmt->bindValue(':history', $history, SQLITE3_TEXT);
+        $sql = "INSERT INTO pets (user_id, type, name, age, medical_history) VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("issis", $userId, $type, $name, $age, $history);
 
         if ($stmt->execute()) {
-            $petId = $conn->lastInsertRowID();
-            echo json_encode(['success' => true, 'message' => 'Pet saved successfully!', 'pet_id' => $petId]);
+            echo json_encode([
+                "success" => true,
+                "message" => "Pet profile added successfully!",
+                "pet_id" => $stmt->insert_id
+            ]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to save the pet.']);
+            echo json_encode([
+                "success" => false,
+                "message" => "Error adding pet profile."
+            ]);
         }
-    } catch (Exception $e) {
-        echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+
+        $stmt->close();
+    } else {
+        echo json_encode([
+            "success" => false,
+            "message" => "You must log in to add a pet."
+        ]);
     }
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
 }
 ?>
