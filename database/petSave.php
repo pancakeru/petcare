@@ -1,21 +1,14 @@
+// Create testSession.php
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 session_start();
-header('Content-Type: application/json');
-
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'User not logged in',
-        'session' => $_SESSION, // Debugging
-        'cookies' => $_COOKIE   // Debugging
-    ]);
-    exit();
+    $_SESSION['user_id'] = 1; // Example user_id
+    echo "Session started. User ID set to 1.";
+} else {
+    echo "Session exists. User ID is " . $_SESSION['user_id'];
 }
+?>
+
 
 // Get the input data
 $data = json_decode(file_get_contents('php://input'), true);
