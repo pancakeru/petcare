@@ -140,6 +140,32 @@ saveButton.addEventListener("click", () => {
         .catch((error) => console.error("Error saving pet:", error));
 });
 
+// Load pets from database on page load
+const loadPets = () => {
+    fetch("../database/getPets.php")
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                data.pets.forEach((pet) => {
+                    createPetProfile(
+                        pet.type,
+                        pet.name,
+                        pet.age,
+                        pet.history,
+                        pet.created
+                    );
+                });
+            } else {
+                console.error("Failed to load pets:", data.error);
+            }
+        })
+        .catch((error) => console.error("Error fetching pets:", error));
+};
+
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+    loadPets();
+});
 
 // Close Pet Info Panel
 document.getElementById("close").addEventListener("click", () => {
