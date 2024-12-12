@@ -1,10 +1,34 @@
 <?php
 
-// Database file path
+// Path to the SQLite database file
 $dbname = '../database/petcareDB.sqlite';
 
+// Check if the database file exists
+if (!file_exists($dbname)) {
+    die(json_encode([
+        'success' => false,
+        'message' => 'Database file does not exist. Please make sure the database is set up properly.'
+    ]));
+}
+
+// Check if the database file is writable
+if (!is_writable($dbname)) {
+    die(json_encode([
+        'success' => false,
+        'message' => 'Database file is not writable. Check file and directory permissions.'
+    ]));
+}
+
+// Check if the directory containing the database file is writable
+if (!is_writable(dirname($dbname))) {
+    die(json_encode([
+        'success' => false,
+        'message' => 'Database directory is not writable. Check directory permissions.'
+    ]));
+}
+
 try {
-    // Create connection to SQLite database
+    // Create connection to the SQLite database
     $conn = new SQLite3($dbname);
 
     // Enable foreign key constraints
@@ -28,6 +52,7 @@ try {
         ]));
     }
 
+    // Create the Users table
     $sql_users = "CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username TEXT NOT NULL UNIQUE,
@@ -42,16 +67,17 @@ try {
         ]));
     }
 
-    // Return a success message if the database and tables are set up correctly
+    // Return a success message if everything is set up correctly
     echo json_encode([
         'success' => true,
         'message' => 'Database connection and setup successful.'
     ]);
 } catch (Exception $e) {
-    // Handle connection errors
+    // Catch any errors during connection or execution
     die(json_encode([
         'success' => false,
-        'message' => 'Database connection failed: ' . $e->getMessage()
+        'message' => 'Error: ' . $e->getMessage()
     ]));
 }
+
 ?>
