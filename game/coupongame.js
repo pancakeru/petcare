@@ -340,7 +340,7 @@ function evaluate() {
             myScore += 1;
             outcome = "Win";
             consecutiveWins += 1;
-            if (consecutiveWins === 5) {
+            if (consecutiveWins === 1) {
                 awardCoupon();
             }
         } else {
