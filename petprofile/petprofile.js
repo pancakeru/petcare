@@ -183,3 +183,26 @@ filterSelect.addEventListener("change", () => {
         }
     });
 });
+
+function loadPets() {
+    fetch("fetchPets.php")
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderPets(data.pets);
+            } else {
+                console.error("Error fetching pets:", data.message);
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error("Error fetching pets:", error));
+}
+
+function renderPets(pets) {
+    activityContainer.innerHTML = ""; 
+    pets.forEach(pet => {
+        createPetProfile(pet.type, pet.name, pet.age, pet.history, pet.id);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadPets);
