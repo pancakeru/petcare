@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.success) {
                 data.pets.forEach((pet) => {
                     const option = document.createElement("option");
-                    option.value = pet.id; // Pet ID as value
-                    option.textContent = `${pet.name} (${pet.type})`; // Display pet name and type
+                    option.value = pet.id; 
+                    option.textContent = `${pet.name} (${pet.type})`; 
                     petSelect.appendChild(option);
                 });
             } else {
@@ -27,8 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch((error) => console.error("Error fetching pets:", error));
 
-    // Form submission
-    form.addEventListener("submit", (event) => {
+    
+    // Submit the appointment form
+    form.addEventListener("submit", event => {
         event.preventDefault();
 
         const petId = petSelect.value;
@@ -37,31 +38,51 @@ document.addEventListener("DOMContentLoaded", () => {
         const reason = document.getElementById("reason").value;
 
         if (!petId || !date || !time || !reason.trim()) {
-            alert("Please fill in all fields before submitting the form.");
+            alert("Please fill in all fields.");
             return;
         }
 
         fetch("saveAppointment.php", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                petId: petId,
-                date: date,
-                time: time,
-                reason: reason,
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ petId, date, time, reason }),
         })
-            .then((response) => response.json())
-            .then((data) => {
+            .then(response => response.json())
+            .then(data => {
                 if (data.success) {
-                    alert("Appointment booked successfully!");
+                    alert(data.message);
                     form.reset();
                 } else {
-                    alert("Failed to book appointment. Please try again.");
+                    alert("Error: " + data.message);
                 }
             })
-            .catch((error) => console.error("Error booking appointment:", error));
+            .catch(error => console.error("Error booking appointment:", error));
     });
 });
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const appointmentsContainer = document.getElementById("appointments");
+
+    fetch("getAppointments.php")
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                appointmentsContainer.innerHTML = "";
+                data.appointments.forEach(appointment => {
+                    const item = document.createElement("div");
+                    item.classList.add("appointment-item");
+                    item.innerHTML = `
+                        <strong>${appointment.petName} (${appointment.petType})</strong>
+                        <p>${appointment.date} at ${appointment.time}</p>
+                        <p>${appointment.reason}</p>
+                    `;
+                    appointmentsContainer.appendChild(item);
+                });
+            } else {
+                alert("Failed to load appointments.");
+            }
+        })
+        .catch(error => console.error("Error loading appointments:", error));
+});
+
