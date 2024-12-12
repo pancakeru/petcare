@@ -17,6 +17,7 @@ const isLoggedIn = async () => {
             return false;
         }
         const result = await response.json();
+        console.log('Login check response:', result);
         console.log('Login check result:', result);
         return result.loggedIn;
     } catch (error) {
