@@ -128,6 +128,7 @@ function draw() {
         recycleTimer--;
             if (recycleTimer <= 0) {
                 recycle();
+                recycleTimer = 100;
                 recycling = false;
             }
      }
