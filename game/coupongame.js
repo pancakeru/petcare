@@ -28,6 +28,8 @@ let anotherBool = false;
 let resetTimer = 50;
 let lmao = false;
 
+let consecutiveWins = 0;
+
 function preload() {
     rockSprite = loadImage("assets/coupon/rat.png");
     paperSprite = loadImage("assets/coupon/cat.png");
@@ -61,8 +63,8 @@ function draw() {
     fill(255);
     textSize(40);
     textAlign(LEFT);
-    text(myScore, 20, 50);
-    text(aiScore, width - 50, 50);
+    text(consecutiveWins + "/5", 20, 50);
+    //text(aiScore, width - 50, 50);
 
     for (let c of cards) {
         c.display();
@@ -331,11 +333,16 @@ function evaluate() {
     ) {
         aiScore += 1;
         outcome = "Lose";
+        consecutiveWins = 0
     } else if (aCard == rockSprite && pCard == paperSprite ||
         aCard == paperSprite && pCard == scissorSprite ||
         aCard == scissorSprite && pCard == rockSprite) {
             myScore += 1;
             outcome = "Win";
+            consecutiveWins += 1;
+            if (consecutiveWins === 1) {
+                awardCoupon();
+            }
         } else {
             outcome = "Draw";
         }
@@ -415,4 +422,23 @@ function bruh() {
     }
     resetTimer = 50;
     anotherBool = true;
+}
+
+function awardCoupon() {
+    let couponCode = 'COUPON-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+
+    //send coupon code to server
+    fetch('couponGenerator.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coupon: couponCode })
+    }).then(response => {
+        if (response.ok) {
+            alert('Congratulations! You earned a coupon: ' + couponCode);
+        } else {
+            alert('Failed to save coupon. Please try again later.');
+        }
+    });
+
+    consecutiveWins = 0; 
 }
