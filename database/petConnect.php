@@ -9,7 +9,7 @@ if (!$conn) {
     die(json_encode(['success' => false, 'message' => 'Database connection failed.']));
 }
 
-// Create the Pets table if it does not exist
+// Create the Pets table
 $sql_pets = "CREATE TABLE IF NOT EXISTS Pets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
@@ -24,7 +24,6 @@ if (!$conn->exec($sql_pets)) {
     die("Error creating table 'Pets': " . $conn->lastErrorMsg());
 }
 
-// Ensure the Users table exists for username reference
 $sql_users = "CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
