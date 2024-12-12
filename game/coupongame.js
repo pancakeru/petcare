@@ -22,6 +22,8 @@ let trash = [];
 let discarding = false;
 let recycling = false;
 let recycleTimer = 100;
+let gameReset = false;
+let inCorner = false;
 
 function preload() {
     rockSprite = loadImage("assets/coupon/rockcard.png");
@@ -61,6 +63,9 @@ function draw() {
 
     for (let c of cards) {
         c.display();
+        if (c.moving) {
+            c.checkMove();
+        }
     }
 
     for (let c of AI) {
@@ -123,6 +128,12 @@ function draw() {
                 recycling = false;
             }
      }
+
+     if (gameReset) {
+        resetting();
+     }
+
+     
 }
 
 class Card {
@@ -174,6 +185,7 @@ class Card {
                     this.up = true;
                 }
             this.move();
+            
         }
 
     }
@@ -203,6 +215,11 @@ class Card {
             if(this.AICard) {
                 this.inHand = true;
                 evaluate();
+            }
+
+            if (trash.includes(this) && trash.indexOf(this) == 23 && inCorner) {
+                gameReset = true;
+                inCorner = false;
             }
 
             this.moving = false;
@@ -251,7 +268,7 @@ function Deal() {
         let temp = cards[cards.length - 1];
         temp.targetX = width/4 * (i/1.5 + 1) + 110;
         temp.targetY = height/6;
-        temp.delay += i*temp.delay;
+        temp.delay = 10 + i * 10;
         temp.moving = true;
         temp.inAI = true;
        // console.log(temp);
@@ -263,7 +280,7 @@ function Deal() {
         let temp = cards[cards.length - 1];
         temp.targetX = width/4 * (i/1.5 + 1) + 110;
         temp.targetY = height/6 * 5;
-        temp.delay += (i+3)*temp.delay;
+        temp.delay = 10 + (i+3)*10;
         temp.moving = true;
 
         player.push(temp);
@@ -342,9 +359,10 @@ function discard() {
 
 function recycle() {
 //console.log("recycling");
+inCorner = true;
     for (let i = 0; i < 24; i++) {
         let temp = trash[i];
-        temp.delay = 10 + i * 5;
+        temp.delay = 10 + i * 3;
         temp.inHand = false;
         temp.targetX = width/10;
         temp.targetY = 100;
@@ -353,5 +371,26 @@ function recycle() {
 }
 
 function resetting() {
-    
+    for (let i = 0; i < trash.length; i++) {
+        let temp = trash[trash.length - 1];
+        cards.push(temp);
+        trash.pop(temp);
+    }
+ //  console.log(cards);
+
+
+    for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+
+    for (let i = 0; i < cards.length; i++) {
+        let temp = cards[i];
+        temp.targetX = width/10;
+        temp.targetY = 450 - cards.indexOf(temp) * sep;
+        temp.moving = true;
+        temp.delay = 10 + i * 10;
+       // console.log(temp.x, temp.y);
+    }
+
 }
