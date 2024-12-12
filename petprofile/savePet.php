@@ -41,7 +41,7 @@ if (!isset($_SESSION['username'])) {
         echo json_encode(["success" => false, "message" => $e->getMessage()]);
     }
 } else {
-    // Invalid request method
     echo json_encode(["success" => false, "message" => "Invalid request method."]);
 }
+ob_end_flush();
 ?>
