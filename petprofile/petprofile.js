@@ -10,9 +10,19 @@ let currentPets = [];
 
 // Check if the user is logged in
 const isLoggedIn = async () => {
-    const response = await fetch('../database/checkLogin.php');
-    const result = await response.json();
-    return result.loggedIn;
+    try {
+        const response = await fetch('checkLogin.php');
+        if (!response.ok) {
+            console.error('Error with checkLogin.php:', response.statusText);
+            return false;
+        }
+        const result = await response.json();
+        console.log('Login check result:', result);
+        return result.loggedIn;
+    } catch (error) {
+        console.error('Fetch error:', error);
+        return false;
+    }
 };
 
 // Create pet profile card
