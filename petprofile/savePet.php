@@ -1,5 +1,5 @@
 <?php
-// Include the database connection
+// Include database connection
 include '../database/petConnect.php';
 session_start();
 
@@ -8,7 +8,8 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Set the content type to JSON
+// Clear output buffer and set response to JSON
+ob_clean();
 header('Content-Type: application/json');
 
 // Check if the user is logged in
@@ -17,13 +18,14 @@ if (!isset($_SESSION['username'])) {
     exit;
 }
 
+// Retrieve POST data
 $username = $_SESSION['username'] ?? null;
 $type = trim($_POST['type'] ?? '');
 $name = trim($_POST['name'] ?? '');
 $age = trim($_POST['age'] ?? '');
 $history = trim($_POST['history'] ?? '');
 
-// Validate input
+// Validate input data
 if (!$type || !$name || !$age || !$history) {
     echo json_encode(['success' => false, 'message' => 'All fields are required.']);
     exit;
@@ -39,14 +41,14 @@ try {
     $sql = "INSERT INTO Pets (username, type, name, age, history) VALUES (:username, :type, :name, :age, :history)";
     $stmt = $pdo->prepare($sql);
 
-    // Bind the parameters
+    // Bind parameters
     $stmt->bindParam(':username', $username, PDO::PARAM_STR);
     $stmt->bindParam(':type', $type, PDO::PARAM_STR);
     $stmt->bindParam(':name', $name, PDO::PARAM_STR);
     $stmt->bindParam(':age', $age, PDO::PARAM_INT);
     $stmt->bindParam(':history', $history, PDO::PARAM_STR);
 
-    // Execute the query
+    // Execute the statement
     if ($stmt->execute()) {
         echo json_encode([
             'success' => true,
@@ -57,7 +59,7 @@ try {
         echo json_encode(['success' => false, 'message' => 'Database error: Unable to save pet.']);
     }
 } catch (PDOException $e) {
-    // Log the error and respond with a generic message
+    // Log the error for debugging and return a generic error message
     error_log("PDOException: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Internal server error.']);
     exit;
