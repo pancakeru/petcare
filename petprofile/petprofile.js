@@ -110,7 +110,7 @@ addButton.addEventListener("click", () => {
     fetch("../database/checkLogin.php")
         .then(response => response.text())
         .then(data => {
-            if (data === "loggedIn") {
+            if (data.loggedIn) {
                 addPanel.classList.remove("hidden");
                 addPetForm.reset();
             } else {
