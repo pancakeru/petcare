@@ -71,7 +71,7 @@ const createPetProfile = (type, name, age, history, id) => {
 
 // Add pet button functionality
 addButton.addEventListener("click", () => {
-    fetch('checkLogin.php')
+    fetch('../database/checkLogin.php')
         .then(response => response.json())
         .then(data => {
             if (data.loggedIn) {
