@@ -30,9 +30,11 @@ const createPetProfile = (type, name, age, history) => {
         document.getElementById("petAge").value = age;
         document.getElementById("medicalHistory").value = history;
 
+        // Remove old save event to avoid duplicates
         saveButton.replaceWith(saveButton.cloneNode(true));
         const updatedSaveButton = document.getElementById("save");
 
+        // Update pet info on save
         updatedSaveButton.addEventListener("click", () => {
             const updatedType = document.getElementById("petSelect").value.trim();
             const updatedName = document.getElementById("petName").value.trim();
@@ -44,6 +46,7 @@ const createPetProfile = (type, name, age, history) => {
                 return;
             }
 
+            // Update pet card data
             petItem.classList.remove(type);
             petItem.classList.add(updatedType);
             petItem.dataset.type = updatedType;
@@ -53,12 +56,14 @@ const createPetProfile = (type, name, age, history) => {
                 <button class="edit-button"></button>
             `;
 
+            // Update delete and edit button functionality
             petItem.querySelector(".delete-button").addEventListener("click", () => {
                 activityContainer.removeChild(petItem);
                 currentPets = currentPets.filter((pet) => pet !== petItem);
             });
             petItem.querySelector(".edit-button").addEventListener("click", () => {
                 event.stopPropagation();
+                // Reopen edit functionality
                 addPanel.classList.remove("hidden");
                 document.getElementById("petSelect").value = updatedType;
                 document.getElementById("petName").value = updatedName;
@@ -91,7 +96,7 @@ const createPetProfile = (type, name, age, history) => {
     activityContainer.appendChild(petItem);
 };
 
-// Add Pet and check log in
+// Add Pet
 addButton.addEventListener("click", () => {
     fetch("../database/checkLogin.php")
         .then(response => response.json())
@@ -112,7 +117,6 @@ cancelButton.addEventListener("click", () => {
     addPetForm.reset();
 });
 
-// save
 saveButton.addEventListener("click", () => {
     const type = document.getElementById("petSelect").value.trim();
     const name = document.getElementById("petName").value.trim();
@@ -124,22 +128,10 @@ saveButton.addEventListener("click", () => {
         return;
     }
 
-    fetch("../database/petSave.php", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ type, name, age, history }),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            createPetProfile(type, name, age, history);
-            addPanel.classList.add("hidden");
-            addPetForm.reset();
-        })
-        .catch((error) => console.error("Error saving pet:", error));
+    createPetProfile(type, name, age, history);
+    addPanel.classList.add("hidden");
+    addPetForm.reset();
 });
-
 
 // Close Pet Info Panel
 document.getElementById("close").addEventListener("click", () => {
