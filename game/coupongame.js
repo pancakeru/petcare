@@ -63,8 +63,8 @@ function draw() {
     fill(255);
     textSize(40);
     textAlign(LEFT);
-    text(myScore, 20, 50);
-    text(aiScore, width - 50, 50);
+    text(consecutiveWins + "/5", 20, 50);
+    //text(aiScore, width - 50, 50);
 
     for (let c of cards) {
         c.display();
