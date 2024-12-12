@@ -65,7 +65,7 @@ foreach ($products as $product) {
 // Create Pets table
 $sql_pets = "CREATE TABLE IF NOT EXISTS Pets (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
+    username TEXT NOT NULL,
     type TEXT NOT NULL,
     name TEXT NOT NULL,
     age INTEGER NOT NULL,
