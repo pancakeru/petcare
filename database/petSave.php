@@ -1,76 +1,53 @@
 <?php
+require_once 'dbConnect.php';
 session_start();
-$dbn = '../database/petcareDB.sqlite';
-$db = new PDO($dbn);
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+header('Content-Type: application/json');
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(["status" => "error", "message" => "User not logged in"]);
-    exit;
+    echo json_encode(['success' => false, 'message' => 'User not logged in.']);
+    exit();
 }
 
-$user_id = $_SESSION['user_id']; // Current logged-in user ID
+// Parse incoming JSON data
+$data = json_decode(file_get_contents('php://input'), true);
+$type = $data['type'] ?? '';
+$name = $data['name'] ?? '';
+age = $data['age'] ?? null;
+history = $data['history'] ?? '';
 
-// Fetch pets for the logged-in user
-if ($_GET['action'] === 'fetch_pets') {
-    $type = $_GET['type'] ?? 'all';
-    try {
-        if ($type === 'all') {
-            $stmt = $db->prepare('SELECT * FROM pets WHERE user_id = ?');
-            $stmt->execute([$user_id]);
-        } else {
-            $stmt = $db->prepare('SELECT * FROM pets WHERE user_id = ? AND type = ?');
-            $stmt->execute([$user_id, $type]);
-        }
-        $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode($pets);
-    } catch (Exception $e) {
-        echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+if (!$type || !$name || is_null($age) || !$history) {
+    echo json_encode(['success' => false, 'message' => 'All fields are required.']);
+    exit();
+}
+
+try {
+    // Ensure the pets table exists
+    $sql = "CREATE TABLE IF NOT EXISTS pets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        name TEXT NOT NULL,
+        age INTEGER NOT NULL,
+        medical_history TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    )";
+    $conn->exec($sql);
+
+    // Insert pet data
+    $stmt = $conn->prepare("INSERT INTO pets (user_id, type, name, age, medical_history) VALUES (:user_id, :type, :name, :age, :history)");
+    $stmt->bindValue(':user_id', $_SESSION['user_id'], SQLITE3_INTEGER);
+    $stmt->bindValue(':type', $type, SQLITE3_TEXT);
+    $stmt->bindValue(':name', $name, SQLITE3_TEXT);
+    $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
+    $stmt->bindValue(':history', $history, SQLITE3_TEXT);
+
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'message' => 'Pet saved successfully.']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to save pet data.']);
     }
-    exit;
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }
-
-// Save a new pet for the logged-in user
-if ($_GET['action'] === 'save_pet') {
-    $input = json_decode(file_get_contents("php://input"), true);
-    try {
-        $stmt = $db->prepare('INSERT INTO pets (user_id, type, name, age, medical_history) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute([$user_id, $input['type'], $input['name'], $input['age'], $input['medical_history']]);
-        $petId = $db->lastInsertId(); // Fetch the new pet's ID
-        echo json_encode(["status" => "success", "id" => $petId]);
-    } catch (Exception $e) {
-        echo json_encode(["status" => "error", "message" => $e->getMessage()]);
-    }
-    exit;
-}
-
-// Update an existing pet
-if ($_GET['action'] === 'save_edits') {
-    $input = json_decode(file_get_contents("php://input"), true);
-    try {
-        $stmt = $db->prepare('UPDATE pets SET type = ?, name = ?, age = ?, medical_history = ? WHERE id = ? AND user_id = ?');
-        $stmt->execute([$input['type'], $input['name'], $input['age'], $input['medical_history'], $input['id'], $user_id]);
-        echo json_encode(["status" => "success"]);
-    } catch (Exception $e) {
-        echo json_encode(["status" => "error", "message" => $e->getMessage()]);
-    }
-    exit;
-}
-
-// Delete a pet
-if ($_GET['action'] === 'delete_pet') {
-    $pet_id = $_GET['id'] ?? null;
-    try {
-        $stmt = $db->prepare('DELETE FROM pets WHERE id = ? AND user_id = ?');
-        $stmt->execute([$pet_id, $user_id]);
-        echo json_encode(["status" => "success"]);
-    } catch (Exception $e) {
-        echo json_encode(["status" => "error", "message" => $e->getMessage()]);
-    }
-    exit;
-}
-
-// Invalid action
-echo json_encode(["status" => "error", "message" => "Invalid action"]);
 ?>
