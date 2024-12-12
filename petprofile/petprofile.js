@@ -143,27 +143,17 @@ saveButton.addEventListener("click", () => {
 // Load pets from database on page load
 const loadPets = () => {
     fetch("../database/getPets.php")
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then((data) => {
-            console.log("Raw data:", data);
-            if (data.pets) {
-                data.pets.forEach((pet) => {
-                    createPetProfile(
-                        pet.type,
-                        pet.name,
-                        pet.age,
-                        pet.history,
-                        pet.created
-                    );
-                });
-            } else {
-                console.warn("No pets found in the database.");
-            }
+        .then((response) => return response.json())
+        .then((data) => { {
+            data.pets.forEach((pet) => {
+                createPetProfile(
+                    pet.type,
+                    pet.name,
+                    pet.age,
+                    pet.history,
+                    pet.created
+                );
+            });
         })
         .catch((error) => console.error("Error fetching pets:", error));
 };
