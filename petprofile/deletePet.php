@@ -1,5 +1,5 @@
 <?php
-include '../database/dbConnect.php';
+include '../database/petConnect.php';
 session_start();
 
 if (!isset($_SESSION['username'])) {
