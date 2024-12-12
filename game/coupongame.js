@@ -143,6 +143,7 @@ class Card {
 
             if(this.AICard) {
                 this.inHand = true;
+                evaluate();
             }
 
             this.moving = false;
@@ -219,4 +220,25 @@ function AIPlay() {
     selected.moving = true;
     selected.AICard = true;
     pool.push(selected.face);
+}
+
+function evaluate() {
+    let pCard = pool[0];
+    let aCard = pool[1];
+
+    if (pCard == rockSprite && aCard == paperSprite ||
+        pCard == paperSprite && aCard == scissorSprite ||
+        pCard == scissorSprite && aCard == rockSprite
+    ) {
+        //lose
+        console.log("lost");
+    } else if (aCard == rockSprite && pCard == paperSprite ||
+        aCard == paperSprite && pCard == scissorSprite ||
+        aCard == scissorSprite && pCard == rockSprite) {
+            //win
+            console.log("win");
+        } else {
+            //tie
+            console.log("draw");
+        }
 }
