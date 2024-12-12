@@ -2,6 +2,10 @@
 include '../database/dbConnect.php';
 session_start();
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 if (!isset($_SESSION['username'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in.']);
     exit;
