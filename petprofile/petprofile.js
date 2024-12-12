@@ -105,6 +105,65 @@ const createPetProfile = (id, type, name, age, history) => {
     currentPets.push(petItem);
 };
 
+// Add Pet
+addButton.addEventListener("click", () => {
+    fetch("../database/checkLogin.php")
+        .then(response => response.text())
+        .then(data => {
+            if (data === "loggedIn") {
+                addPanel.classList.remove("hidden");
+                addPetForm.reset();
+            } else {
+                alert("You must log in to add a pet!");
+                window.location.href = "../login/login.php";
+            }
+        })
+        .catch(err => console.error("Error checking session:", err));
+});
+
+// Save Pet
+saveButton.addEventListener("click", () => {
+    const type = document.getElementById("petSelect").value.trim();
+    const name = document.getElementById("petName").value.trim();
+    const age = parseInt(document.getElementById("petAge").value.trim(), 10);
+    const history = document.getElementById("medicalHistory").value.trim();
+
+    if (!type || !name || isNaN(age) || age <= 0 || !history) {
+        alert("Please fill all fields, and age must be a positive number!");
+        return;
+    }
+
+    fetch("savePet.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ type, name, age, history }),
+    })
+        .then(response => response.text())
+        .then(data => {
+            if (data.startsWith("Success:")) {
+                alert(data);
+                const newId = Date.now(); // Replace with actual ID from the server response
+                createPetProfile(newId, type, name, age, history);
+                addPanel.classList.add("hidden");
+                addPetForm.reset();
+            } else {
+                alert(data);
+            }
+        })
+        .catch(err => console.error("Error saving pet:", err));
+});
+
+// Cancel Add Pet
+cancelButton.addEventListener("click", () => {
+    addPanel.classList.add("hidden");
+    addPetForm.reset();
+});
+
+// Close Pet Info Panel
+document.getElementById("close").addEventListener("click", () => {
+    infoPanel.classList.add("hidden");
+});
+
 // Filter Pets
 filterSelect.addEventListener("change", () => {
     const filterValue = filterSelect.value;
