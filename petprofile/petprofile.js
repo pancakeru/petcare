@@ -8,53 +8,22 @@ const infoPanel = document.getElementById("petinfo");
 const filterSelect = document.getElementById("filter");
 let currentPets = [];
 
-// Redirect to login if user is not logged in
-const checkLoginStatus = async () => {
-    try {
-        const response = await fetch("../database/checkLogin.php"); // Backend to check login status
-        const result = await response.json();
-        if (!result.loggedIn) {
-            window.location.href = "../login/login.php?error=Please login to access pet profiles.";
-        }
-    } catch (error) {
-        console.error("Error checking login status:", error);
-        alert("An error occurred. Please try again.");
-        window.location.href = "../login/login.php";
-    }
-};
-
-// Fetch pets from backend
-const fetchPetsFromBackend = async () => {
-    try {
-        const response = await fetch("../database/petSave.php?action=fetch_pets");
-        if (!response.ok) throw new Error("Failed to fetch pets.");
-        const pets = await response.json();
-        pets.forEach((pet) => {
-            createPetProfile(pet.id, pet.type, pet.name, pet.age, pet.medical_history, pet.created_date);
-        });
-    } catch (error) {
-        console.error("Error fetching pets:", error);
-        alert("An error occurred while fetching pets.");
-    }
-};
-
 // Create pet profile card
-const createPetProfile = (id, type, name, age, history, createdDate) => {
+const createPetProfile = (type, name, age, history) => {
     const petItem = document.createElement("div");
     petItem.classList.add("pet-item", type);
-    petItem.dataset.id = id;
     petItem.dataset.type = type;
+    petItem.dataset.created = new Date().toLocaleString();
 
     petItem.innerHTML = `
-        <strong>${name}</strong> (${age} years old, ${type})
-        <p>Medical History: ${history}</p>
-        <p>Created: ${createdDate || new Date().toLocaleString()}</p>
-        <button class="edit-button">Edit</button>
-        <button class="delete-button">Delete</button>
+        <strong>${name}</strong> (${age} years old)
+        <button class="delete-button"></button>
+        <button class="edit-button"></button>
     `;
 
-    // Edit pet profile
+    // Open the edit panel
     petItem.querySelector(".edit-button").addEventListener("click", () => {
+        event.stopPropagation();
         addPanel.classList.remove("hidden");
         document.getElementById("petSelect").value = type;
         document.getElementById("petName").value = name;
@@ -64,110 +33,129 @@ const createPetProfile = (id, type, name, age, history, createdDate) => {
         saveButton.replaceWith(saveButton.cloneNode(true));
         const updatedSaveButton = document.getElementById("save");
 
-        updatedSaveButton.addEventListener("click", async () => {
+        updatedSaveButton.addEventListener("click", () => {
             const updatedType = document.getElementById("petSelect").value.trim();
             const updatedName = document.getElementById("petName").value.trim();
             const updatedAge = parseInt(document.getElementById("petAge").value.trim(), 10);
             const updatedHistory = document.getElementById("medicalHistory").value.trim();
 
             if (!updatedType || !updatedName || isNaN(updatedAge) || updatedAge <= 0 || !updatedHistory) {
-                alert("Please fill in all fields and ensure age is a positive number.");
+                alert("Please fill all the blank, and age must be a positive number!");
                 return;
             }
 
-            try {
-                const response = await fetch("../database/petSave.php?action=save_edits", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        id,
-                        type: updatedType,
-                        name: updatedName,
-                        age: updatedAge,
-                        medical_history: updatedHistory,
-                    }),
-                });
-                const result = await response.json();
+            petItem.classList.remove(type);
+            petItem.classList.add(updatedType);
+            petItem.dataset.type = updatedType;
+            petItem.innerHTML = `
+                <strong>${updatedName}</strong> (${updatedAge} years old)
+                <button class="delete-button"></button>
+                <button class="edit-button"></button>
+            `;
 
-                if (result.status === "success") {
-                    petItem.innerHTML = `
-                        <strong>${updatedName}</strong> (${updatedAge} years old, ${updatedType})
-                        <p>Medical History: ${updatedHistory}</p>
-                        <p>Created: ${petItem.dataset.created}</p>
-                        <button class="edit-button">Edit</button>
-                        <button class="delete-button">Delete</button>
-                    `;
-                    addPanel.classList.add("hidden");
-                } else {
-                    alert("Failed to update pet. Please try again.");
-                }
-            } catch (error) {
-                console.error("Error updating pet:", error);
-                alert("An error occurred. Please try again.");
-            }
+            petItem.querySelector(".delete-button").addEventListener("click", () => {
+                activityContainer.removeChild(petItem);
+                currentPets = currentPets.filter((pet) => pet !== petItem);
+            });
+            petItem.querySelector(".edit-button").addEventListener("click", () => {
+                event.stopPropagation();
+                addPanel.classList.remove("hidden");
+                document.getElementById("petSelect").value = updatedType;
+                document.getElementById("petName").value = updatedName;
+                document.getElementById("petAge").value = updatedAge;
+                document.getElementById("medicalHistory").value = updatedHistory;
+            });
+
+            addPanel.classList.add("hidden");
         });
     });
 
-    // Delete pet profile
-    petItem.querySelector(".delete-button").addEventListener("click", async () => {
-        if (!confirm("Are you sure you want to delete this pet?")) return;
+    petItem.addEventListener("click", (e) => {
+        if (e.target.classList.contains("delete-button")) return;
 
-        try {
-            const response = await fetch(`../database/petSave.php?action=delete_pet&id=${id}`, { method: "DELETE" });
-            const result = await response.json();
-
-            if (result.status === "success") {
-                petItem.remove();
-            } else {
-                alert("Failed to delete pet. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error deleting pet:", error);
-            alert("An error occurred. Please try again.");
-        }
+        infoPanel.classList.remove("hidden");
+        document.getElementById("infoType").textContent = `Type: ${type}`;
+        document.getElementById("infoName").textContent = `Name: ${name}`;
+        document.getElementById("infoAge").textContent = `Age: ${age}`;
+        document.getElementById("infoHistory").textContent = `Medical History: ${history}`;
+        document.getElementById("infoCreated").textContent = `Created: ${petItem.dataset.created}`;
+        document.getElementById("infoAccessed").textContent = `Last Accessed: ${new Date().toLocaleString()}`;
     });
 
+    petItem.querySelector(".delete-button").addEventListener("click", () => {
+        activityContainer.removeChild(petItem);
+        currentPets = currentPets.filter((pet) => pet !== petItem);
+    });
+
+    currentPets.push(petItem);
     activityContainer.appendChild(petItem);
 };
 
-// Save new pet
-saveButton.addEventListener("click", async () => {
+// Add Pet
+addButton.addEventListener("click", () => {
+    fetch("../database/checkLogin.php")
+        .then(response => response.json())
+        .then(data => {
+            if (data.loggedIn) {
+                addPanel.classList.remove("hidden");
+                addPetForm.reset();
+            } else {
+                alert("You must log in to add a pet!");
+                window.location.href = "../login/login.php";
+            }
+        })
+        .catch(err => console.error("Error checking session:", err));
+});
+
+cancelButton.addEventListener("click", () => {
+    addPanel.classList.add("hidden");
+    addPetForm.reset();
+});
+
+saveButton.addEventListener("click", () => {
     const type = document.getElementById("petSelect").value.trim();
     const name = document.getElementById("petName").value.trim();
     const age = parseInt(document.getElementById("petAge").value.trim(), 10);
     const history = document.getElementById("medicalHistory").value.trim();
 
     if (!type || !name || isNaN(age) || age <= 0 || !history) {
-        alert("Please fill in all fields and ensure age is a positive number.");
+        alert("Please fill all the blank, and age must be a positive number!");
         return;
     }
 
-    try {
-        const response = await fetch("../database/petSave.php?action=save_pet", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ type, name, age, medical_history: history }),
-        });
-        const result = await response.json();
+    fetch("../database/savePet.php", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ type, name, age, history })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                createPetProfile(type, name, age, history);
+                addPanel.classList.add("hidden");
+                addPetForm.reset();
+            } else {
+                alert(data.message || "Failed to save pet data.");
+            }
+        })
+        .catch(err => console.error("Error saving pet data:", err));
+});
 
-        if (result.status === "success") {
-            createPetProfile(result.id, type, name, age, history);
-            addPanel.classList.add("hidden");
-            addPetForm.reset();
+// Close Pet Info Panel
+document.getElementById("close").addEventListener("click", () => {
+    infoPanel.classList.add("hidden");
+});
+
+// Filter Pets
+filterSelect.addEventListener("change", () => {
+    const filterValue = filterSelect.value;
+    currentPets.forEach((pet) => {
+        if (filterValue === "all" || pet.dataset.type === filterValue) {
+            pet.style.display = "";
         } else {
-            alert("Failed to save pet. Please try again.");
+            pet.style.display = "none";
         }
-    } catch (error) {
-        console.error("Error saving pet:", error);
-        alert("An error occurred. Please try again.");
-    }
+    });
 });
-
-// Cancel adding a new pet
-cancelButton.addEventListener("click", () => {
-    addPanel.classList.add("hidden");
-    addPetForm.reset();
-});
-
-// Redirect if not logged in and fetch pets
-checkLoginStatus().then(fetchPetsFromBackend);
