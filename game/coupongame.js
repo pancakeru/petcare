@@ -20,6 +20,8 @@ let outcome = "";
 
 let trash = [];
 let discarding = false;
+let recycling = false;
+let recycleTimer = 100;
 
 function preload() {
     rockSprite = loadImage("assets/coupon/rockcard.png");
@@ -101,14 +103,25 @@ function draw() {
 
     if(discarding) {
         // console.log(discarding);
-         for (let i = 0; i < trash.length; i++) {
-             if (trash[i].moving) {
-                 return;
-             }
-         } 
- 
-         Deal();
-         discarding = false;
+        if (cards.length > 0) {
+            for (let i = 0; i < trash.length; i++) {
+                if (trash[i].moving) {
+                    return;
+                }
+            } 
+            Deal();
+        } else {
+            recycling = true;
+        }
+        discarding = false;
+     }
+
+     if (recycling) {
+        recycleTimer--;
+            if (recycleTimer <= 0) {
+                recycle();
+                recycling = false;
+            }
      }
 }
 
@@ -120,8 +133,6 @@ class Card {
         this.face = face;
 
         this.inHand = false;
-        this.discard = false;
-        this.reveal = false;
         this.AICard = false;
 
         this.height = 160;
@@ -327,4 +338,20 @@ function discard() {
     }
 
     inPlay = false;
+}
+
+function recycle() {
+//console.log("recycling");
+    for (let i = 0; i < 24; i++) {
+        let temp = trash[i];
+        temp.delay = 10 + i * 5;
+        temp.inHand = false;
+        temp.targetX = width/10;
+        temp.targetY = 100;
+        temp.moving = true;
+    }
+}
+
+function resetting() {
+    
 }
