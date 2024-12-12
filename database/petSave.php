@@ -1,30 +1,35 @@
 <?php
-session_start();
-header('Content-Type: application/json');
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'error' => 'Not logged in']);
-    exit;
+
+include 'dbConnect.php'; // Include database connection
+
+header("Content-Type: application/json");
+
+$data = json_decode(file_get_contents("php://input"), true);
+
+if (isset($data['type'], $data['name'], $data['age'], $data['history'])) {
+    $type = $data['type'];
+    $name = $data['name'];
+    $age = intval($data['age']);
+    $history = $data['history'];
+
+    $query = "INSERT INTO pets (type, name, age, medical_history) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ssis", $type, $name, $age, $history);
+
+    if ($stmt->execute()) {
+        echo json_encode(["success" => true]);
+    } else {
+        echo json_encode(["success" => false, "error" => $stmt->error]);
+    }
+
+    $stmt->close();
+} else {
+    echo json_encode(["success" => false, "error" => "Invalid input"]);
 }
 
-$data = json_decode(file_get_contents('php://input'), true);
-if (!$data || !isset($data['type'], $data['name'], $data['age'], $data['history'])) {
-    echo json_encode(['success' => false, 'error' => 'Invalid data']);
-    exit;
-}
-
-try {
-    $db = new PDO('sqlite:petcareDB.sqlite');
-    $stmt = $db->prepare('INSERT INTO pets (user_id, type, name, age, history) VALUES (?, ?, ?, ?, ?)');
-    $stmt->execute([
-        $_SESSION['user_id'],
-        $data['type'],
-        $data['name'],
-        $data['age'],
-        $data['history'],
-    ]);
-    echo json_encode(['success' => true]);
-} catch (PDOException $e) {
-    echo json_encode(['success' => false, 'error' => $e->getMessage()]);
-}
+$conn->close();
 ?>
