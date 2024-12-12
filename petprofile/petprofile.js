@@ -51,7 +51,7 @@ const createPetProfile = (id, type, name, age, history) => {
                     type: updatedType,
                     name: updatedName,
                     age: updatedAge,
-                    history: updatedHistory
+                    history: updatedHistory,
                 }),
             })
                 .then(response => response.json())
@@ -112,6 +112,7 @@ addButton.addEventListener("click", () => {
         .catch(err => console.error("Error checking session:", err));
 });
 
+// Save Pet
 saveButton.addEventListener("click", () => {
     const type = document.getElementById("petSelect").value.trim();
     const name = document.getElementById("petName").value.trim();
@@ -123,36 +124,34 @@ saveButton.addEventListener("click", () => {
         return;
     }
 
-    fetch('savePet.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-        type: typeInput,
-        name: nameInput,
-        age: ageInput,
-        history: historyInput,
-    }),
-})
-    .then(response => response.text())
-    .then(text => {
-        try {
-            const data = JSON.parse(text);
-            if (data.success) {
-                console.log('Pet saved successfully:', data);
-                // Handle success (e.g., update UI)
-            } else {
-                console.error('Error saving pet:', data.message);
-            }
-        } catch (error) {
-            console.error('Error parsing JSON:', error);
-            console.error('Response text:', text);
-        }
+    fetch("savePet.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ type, name, age, history }),
     })
-    .catch(error => {
-        console.error('Fetch error:', error);
-    });
+        .then(response => response.text())
+        .then(text => {
+            try {
+                const data = JSON.parse(text);
+                if (data.success) {
+                    createPetProfile(data.pet_id, type, name, age, history);
+                    addPanel.classList.add("hidden");
+                    addPetForm.reset();
+                    alert(data.message);
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+                console.error("Response text:", text);
+            }
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+        });
+});
 
-
+// Cancel Add Pet
 cancelButton.addEventListener("click", () => {
     addPanel.classList.add("hidden");
     addPetForm.reset();
