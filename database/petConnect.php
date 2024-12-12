@@ -2,11 +2,11 @@
 // Specify the path to the SQLite database
 $dbname = '../database/petcareDB.sqlite';
 
-// Create a connection to the SQLite database
 try {
-    $conn = new SQLite3($dbname);
-    $conn->enableExceptions(true); // Enable exceptions for detailed error handling
-} catch (Exception $e) {
+    // Create a PDO connection to the SQLite database
+    $pdo = new PDO("sqlite:$dbname");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Set error mode to exceptions
+} catch (PDOException $e) {
     // Handle connection errors
     die(json_encode([
         'success' => false,
@@ -28,13 +28,8 @@ try {
     )";
 
     // Execute the query to create the table
-    if (!$conn->exec($sql_pets)) {
-        die(json_encode([
-            'success' => false,
-            'message' => "Error creating table 'Pets': " . $conn->lastErrorMsg()
-        ]));
-    }
-} catch (Exception $e) {
+    $pdo->exec($sql_pets);
+} catch (PDOException $e) {
     // Handle errors during table creation
     die(json_encode([
         'success' => false,
