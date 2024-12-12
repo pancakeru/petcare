@@ -4,11 +4,23 @@ const addPetForm = document.getElementById("addPetForm");
 const saveButton = document.getElementById("save");
 const cancelButton = document.getElementById("cancel");
 const activityContainer = document.getElementById("activity");
-const infoPanel = document.getElementById("petinfo");
 const filterSelect = document.getElementById("filter");
 
-// Keep track of current pets
-let currentPets = [];
+// Show the Add Pet form
+addButton.addEventListener("click", () => {
+    fetch("../login/checkSession.php") // Ensure the user is logged in
+        .then(response => response.json())
+        .then(data => {
+            if (data.loggedIn) {
+                addPanel.classList.remove("hidden");
+                addPetForm.reset();
+            } else {
+                alert("You must log in to add a pet!");
+                window.location.href = "../login/login.php";
+            }
+        })
+        .catch(err => console.error("Error checking session:", err));
+});
 
 // Create a pet profile card and initialize buttons
 const createPetProfile = (id, type, name, age, history) => {
@@ -105,49 +117,42 @@ const createPetProfile = (id, type, name, age, history) => {
     currentPets.push(petItem);
 };
 
-// Add Pet
-addButton.addEventListener("click", () => {
-    fetch("../database/checkLogin.php")
-        .then(response => response.text())
-        .then(data => {
-            if (data.loggedIn) {
-                addPanel.classList.remove("hidden");
-                addPetForm.reset();
-            } else {
-                alert("You must log in to add a pet!");
-                window.location.href = "../login/login.php";
-            }
-        })
-        .catch(err => console.error("Error checking session:", err));
-});
 
 // Save Pet
 saveButton.addEventListener("click", () => {
     const type = document.getElementById("petSelect").value.trim();
     const name = document.getElementById("petName").value.trim();
-    const age = parseInt(document.getElementById("petAge").value.trim(), 10);
+    const age = document.getElementById("petAge").value.trim();
     const history = document.getElementById("medicalHistory").value.trim();
 
-    if (!type || !name || isNaN(age) || age <= 0 || !history) {
-        alert("Please fill all fields, and age must be a positive number!");
+    // Input validation
+    if (!type || !name || !age || !history) {
+        alert("All fields are required!");
+        return;
+    }
+    if (isNaN(age) || age <= 0) {
+        alert("Age must be a positive number!");
         return;
     }
 
+    // Send data to savePet.php
     fetch("savePet.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ type, name, age, history }),
     })
-        .then(response => response.text())
+        .then(response => response.text()) // Handle raw response
         .then(data => {
-            if (data.startsWith("Success:")) {
-                alert(data);
-                const newId = Date.now(); // Replace with actual ID from the server response
-                createPetProfile(newId, type, name, age, history);
+            // Redirects and success messages handled in PHP
+            if (data.includes("successfully")) {
+                alert("Pet added successfully!");
                 addPanel.classList.add("hidden");
                 addPetForm.reset();
+                // Optionally, refresh the page or fetch new pet data
+            } else if (data.includes("error")) {
+                alert("Error adding pet: " + data);
             } else {
-                alert(data);
+                console.error("Unexpected response:", data);
             }
         })
         .catch(err => console.error("Error saving pet:", err));
@@ -157,11 +162,6 @@ saveButton.addEventListener("click", () => {
 cancelButton.addEventListener("click", () => {
     addPanel.classList.add("hidden");
     addPetForm.reset();
-});
-
-// Close Pet Info Panel
-document.getElementById("close").addEventListener("click", () => {
-    infoPanel.classList.add("hidden");
 });
 
 // Filter Pets
