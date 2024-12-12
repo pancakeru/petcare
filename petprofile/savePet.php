@@ -1,5 +1,5 @@
 <?php
-include '../database/petConnect.php';
+include 'petConnect.php'; // Ensure this file correctly includes and configures the database connection
 session_start();
 
 // Enable error reporting for debugging
@@ -8,11 +8,6 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 header('Content-Type: application/json'); // Ensure JSON response
-
-// Check database connection
-if (!isset($conn)) {
-    die(json_encode(['success' => false, 'message' => 'Database connection failed.']));
-}
 
 // Check if user is logged in
 if (!isset($_SESSION['username'])) {
@@ -61,8 +56,7 @@ try {
         echo json_encode(['success' => false, 'message' => 'Database error: Unable to save pet.']);
     }
 } catch (Exception $e) {
-    // Catch and log exceptions
+    // Handle exceptions
     error_log("Exception: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Internal server error.']);
 }
-?>
