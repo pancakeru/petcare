@@ -136,7 +136,6 @@ saveButton.addEventListener("click", () => {
             addPetForm.reset();
             alert(data.message);
         })
-        .catch(err => console.error("Error saving pet:", err));
 });
 
 // Cancel Add Pet
