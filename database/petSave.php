@@ -14,7 +14,7 @@ if (!$data || !isset($data['type'], $data['name'], $data['age'], $data['history'
 }
 
 try {
-    $db = new PDO('sqlite:petcareDB.sqlite');
+    require 'dbConnect.php';
     $stmt = $db->prepare('INSERT INTO pets (user_id, type, name, age, history) VALUES (?, ?, ?, ?, ?)');
     $stmt->execute([
         $_SESSION['user_id'],
@@ -23,7 +23,7 @@ try {
         $data['age'],
         $data['history'],
     ]);
-    file_put_contents('debug_log.txt', "Pet saved: " . print_r($data, true), FILE_APPEND);
+
     echo json_encode(['success' => true]);
 } catch (PDOException $e) {
     echo json_encode(['success' => false, 'error' => $e->getMessage()]);
