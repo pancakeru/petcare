@@ -8,12 +8,70 @@ const infoPanel = document.getElementById("petinfo");
 const filterSelect = document.getElementById("filter");
 let currentPets = [];
 
-// Create pet profile card
-const createPetProfile = (type, name, age, history) => {
+// Check login status before adding a pet
+addButton.addEventListener("click", () => {
+    fetch("../database/checkLogin.php")
+        .then(response => response.json())
+        .then(data => {
+            if (data.loggedIn) {
+                addPanel.classList.remove("hidden");
+                addPetForm.reset();
+                
+            } else {
+                alert("You must log in to add a pet!");
+                window.location.href = "../login/login.php";
+            }
+        });
+});
+
+// Save a new pet to the database
+saveButton.addEventListener("click", () => {
+    const type = document.getElementById("petSelect").value.trim();
+    const name = document.getElementById("petName").value.trim();
+    const age = parseInt(document.getElementById("petAge").value.trim(), 10);
+    const history = document.getElementById("medicalHistory").value.trim();
+
+    if (!type || !name || isNaN(age) || age <= 0 || !history) {
+        alert("Please fill all the fields correctly.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("type", type);
+    formData.append("name", name);
+    formData.append("age", age);
+    formData.append("history", history);
+
+    fetch("savePet.php", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.text()) 
+    .then(data => {
+        try {
+            const json = JSON.parse(data); 
+            if (json.success) {
+                alert(json.message);
+                createPetProfile(type, name, age, history);
+                addPanel.classList.add("hidden");
+                addPetForm.reset();
+            } else {
+                alert("Error: " + json.message);
+            }
+        } catch (error) {
+            console.error("Invalid JSON response:", data);
+            alert("Unexpected server response. Please check the console for details.");
+        }
+    })
+    .catch(error => console.error("Fetch error:", error));
+});
+
+// Create a pet profile card
+const createPetProfile = (type, name, age, history, id = null) => {
     const petItem = document.createElement("div");
     petItem.classList.add("pet-item", type);
     petItem.dataset.type = type;
-    petItem.dataset.created = new Date().toLocaleString();
+    petItem.dataset.id = id;
 
     petItem.innerHTML = `
         <strong>${name}</strong> (${age} years old)
@@ -21,9 +79,8 @@ const createPetProfile = (type, name, age, history) => {
         <button class="edit-button"></button>
     `;
 
-    // Open the edit panel
+    // Open edit panel
     petItem.querySelector(".edit-button").addEventListener("click", () => {
-        event.stopPropagation();
         addPanel.classList.remove("hidden");
         document.getElementById("petSelect").value = type;
         document.getElementById("petName").value = name;
@@ -32,7 +89,6 @@ const createPetProfile = (type, name, age, history) => {
 
         saveButton.replaceWith(saveButton.cloneNode(true));
         const updatedSaveButton = document.getElementById("save");
-
         updatedSaveButton.addEventListener("click", () => {
             const updatedType = document.getElementById("petSelect").value.trim();
             const updatedName = document.getElementById("petName").value.trim();
@@ -40,131 +96,85 @@ const createPetProfile = (type, name, age, history) => {
             const updatedHistory = document.getElementById("medicalHistory").value.trim();
 
             if (!updatedType || !updatedName || isNaN(updatedAge) || updatedAge <= 0 || !updatedHistory) {
-                alert("Please fill all the blank, and age must be a positive number!");
+                alert("Please fill all the fields correctly.");
                 return;
             }
 
+            editPet(petItem.dataset.id, updatedType, updatedName, updatedAge, updatedHistory);
             petItem.classList.remove(type);
             petItem.classList.add(updatedType);
-            petItem.dataset.type = updatedType;
             petItem.innerHTML = `
                 <strong>${updatedName}</strong> (${updatedAge} years old)
                 <button class="delete-button"></button>
                 <button class="edit-button"></button>
             `;
-
-            petItem.querySelector(".delete-button").addEventListener("click", () => {
-                activityContainer.removeChild(petItem);
-                currentPets = currentPets.filter((pet) => pet !== petItem);
-            });
-            petItem.querySelector(".edit-button").addEventListener("click", () => {
-                event.stopPropagation();
-                addPanel.classList.remove("hidden");
-                document.getElementById("petSelect").value = updatedType;
-                document.getElementById("petName").value = updatedName;
-                document.getElementById("petAge").value = updatedAge;
-                document.getElementById("medicalHistory").value = updatedHistory;
-            });
-
             addPanel.classList.add("hidden");
         });
     });
 
-    petItem.addEventListener("click", (e) => {
-        if (e.target.classList.contains("delete-button")) return;
-
-        infoPanel.classList.remove("hidden");
-        document.getElementById("infoType").textContent = `Type: ${type}`;
-        document.getElementById("infoName").textContent = `Name: ${name}`;
-        document.getElementById("infoAge").textContent = `Age: ${age}`;
-        document.getElementById("infoHistory").textContent = `Medical History: ${history}`;
-        document.getElementById("infoCreated").textContent = `Created: ${petItem.dataset.created}`;
-        document.getElementById("infoAccessed").textContent = `Last Accessed: ${new Date().toLocaleString()}`;
-    });
-
+    // Delete pet
     petItem.querySelector(".delete-button").addEventListener("click", () => {
-        activityContainer.removeChild(petItem);
-        currentPets = currentPets.filter((pet) => pet !== petItem);
+        deletePet(petItem.dataset.id, petItem);
     });
 
-    currentPets.push(petItem);
     activityContainer.appendChild(petItem);
+    currentPets.push(petItem);
 };
 
-// Add Pet and check log in
-addButton.addEventListener("click", () => {
-    fetch("../database/checkLogin.php")
+// Delete a pet from the database
+function deletePet(petId, petItem) {
+    const formData = new FormData();
+    formData.append("id", petId);
+
+    fetch("deletePet.php", {
+        method: "POST",
+        body: formData,
+    })
         .then(response => response.json())
         .then(data => {
-            if (data.loggedIn) {
-                addPanel.classList.remove("hidden");
-                addPetForm.reset();
+            if (data.success) {
+                alert(data.message);
+                activityContainer.removeChild(petItem);
+                currentPets = currentPets.filter(pet => pet !== petItem);
             } else {
-                alert("You must log in to add a pet!");
-                window.location.href = "../login/login.php";
+                alert(data.message);
             }
-        })
-        .catch(err => console.error("Error checking session:", err));
-});
+        });
+}
 
+// Edit a pet in the database
+function editPet(petId, updatedType, updatedName, updatedAge, updatedHistory) {
+    const formData = new FormData();
+    formData.append("id", petId);
+    formData.append("type", updatedType);
+    formData.append("name", updatedName);
+    formData.append("age", updatedAge);
+    formData.append("history", updatedHistory);
+
+    fetch("editPet.php", {
+        method: "POST",
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert(data.message);
+            }
+        });
+}
+
+// Cancel adding or editing a pet
 cancelButton.addEventListener("click", () => {
     addPanel.classList.add("hidden");
     addPetForm.reset();
 });
 
-// save
-saveButton.addEventListener("click", () => {
-    const type = document.getElementById("petSelect").value.trim();
-    const name = document.getElementById("petName").value.trim();
-    const age = parseInt(document.getElementById("petAge").value.trim(), 10);
-    const history = document.getElementById("medicalHistory").value.trim();
-
-    if (!type || !name || isNaN(age) || age <= 0 || !history) {
-        alert("Please fill all the blank, and age must be a positive number!");
-        return;
-    }
-
-    fetch("../database/petSave.php", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ type, name, age, history }),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            createPetProfile(type, name, age, history);
-            addPanel.classList.add("hidden");
-            addPetForm.reset();
-        })
-        .catch((error) => console.error("Error saving pet:", error));
-});
-
-// Fetch pets from the server on page load
-document.addEventListener("DOMContentLoaded", () => {
-    fetch("../database/getPets.php")
-        .then((response) => {
-            if (!response.ok) throw new Error("Network response was not ok");
-            return response.json();
-        })
-        .then((pets) => {
-            pets.forEach((pet) => {
-                createPetProfile(pet.type, pet.name, pet.age, pet.history);
-            });
-        })
-        .catch((error) => console.error("Error fetching pets:", error));
-});
-
-
-// Close Pet Info Panel
-document.getElementById("close").addEventListener("click", () => {
-    infoPanel.classList.add("hidden");
-});
-
-// Filter Pets
+// Filter pets by type
 filterSelect.addEventListener("change", () => {
     const filterValue = filterSelect.value;
-    currentPets.forEach((pet) => {
+    currentPets.forEach(pet => {
         if (filterValue === "all" || pet.dataset.type === filterValue) {
             pet.style.display = "";
         } else {
@@ -172,3 +182,26 @@ filterSelect.addEventListener("change", () => {
         }
     });
 });
+
+function loadPets() {
+    fetch("getPet.php")
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                renderPets(data.pets);
+            } else {
+                console.error("Error fetching pets:", data.message);
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error("Error fetching pets:", error));
+}
+
+function renderPets(pets) {
+    activityContainer.innerHTML = ""; 
+    pets.forEach(pet => {
+        createPetProfile(pet.type, pet.name, pet.age, pet.history, pet.id);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", loadPets);
