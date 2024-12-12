@@ -10,7 +10,7 @@ let currentPets = [];
 
 // Check login before showing the add panel
 addButton.addEventListener("click", () => {
-    fetch('checkLogin.php')
+    fetch('../database/checkLogin.php')
         .then(response => response.json())
         .then(data => {
             if (!data.loggedIn) {
