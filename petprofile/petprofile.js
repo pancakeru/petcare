@@ -132,13 +132,9 @@ saveButton.addEventListener("click", () => {
     })
         .then((response) => response.json())
         .then((data) => {
-            if (data.success) {
-                createPetProfile(type, name, age, history);
-                addPanel.classList.add("hidden");
-                addPetForm.reset();
-            } else {
-                alert("Failed to save pet. Please try again.");
-            }
+            createPetProfile(type, name, age, history);
+            addPanel.classList.add("hidden");
+            addPetForm.reset();
         })
         .catch((error) => console.error("Error saving pet:", error));
 });
