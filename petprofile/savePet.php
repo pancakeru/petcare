@@ -1,4 +1,5 @@
 <?php
+// Include the database connection
 include '../database/petConnect.php';
 session_start();
 
@@ -7,44 +8,45 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-header('Content-Type: application/json'); // Ensure JSON response
+// Set the content type to JSON
+header('Content-Type: application/json');
 
-// Check if user is logged in
+// Check if the user is logged in
 if (!isset($_SESSION['username'])) {
     echo json_encode(['success' => false, 'message' => 'User not logged in.']);
     exit;
 }
 
-$username = $_SESSION['username'];
-$type = $_POST['type'] ?? '';
-$name = $_POST['name'] ?? '';
-$age = $_POST['age'] ?? '';
-$history = $_POST['history'] ?? '';
+$username = $_SESSION['username'] ?? null;
+$type = trim($_POST['type'] ?? '');
+$name = trim($_POST['name'] ?? '');
+$age = trim($_POST['age'] ?? '');
+$history = trim($_POST['history'] ?? '');
 
 // Validate input
-if (empty($type) || empty($name) || empty($age) || empty($history)) {
+if (!$type || !$name || !$age || !$history) {
     echo json_encode(['success' => false, 'message' => 'All fields are required.']);
     exit;
 }
 
-if (!is_numeric($age) || (int)$age <= 0) {
+if (!ctype_digit($age) || (int)$age <= 0) {
     echo json_encode(['success' => false, 'message' => 'Age must be a positive number.']);
     exit;
 }
 
 try {
-    // Prepare SQL statement
+    // Prepare the SQL statement
     $sql = "INSERT INTO Pets (username, type, name, age, history) VALUES (:username, :type, :name, :age, :history)";
     $stmt = $pdo->prepare($sql);
 
-    // Bind parameters
+    // Bind the parameters
     $stmt->bindParam(':username', $username, PDO::PARAM_STR);
     $stmt->bindParam(':type', $type, PDO::PARAM_STR);
     $stmt->bindParam(':name', $name, PDO::PARAM_STR);
     $stmt->bindParam(':age', $age, PDO::PARAM_INT);
     $stmt->bindParam(':history', $history, PDO::PARAM_STR);
 
-    // Execute query
+    // Execute the query
     if ($stmt->execute()) {
         echo json_encode([
             'success' => true,
@@ -55,8 +57,9 @@ try {
         echo json_encode(['success' => false, 'message' => 'Database error: Unable to save pet.']);
     }
 } catch (PDOException $e) {
-    // Handle exceptions
+    // Log the error and respond with a generic message
     error_log("PDOException: " . $e->getMessage());
     echo json_encode(['success' => false, 'message' => 'Internal server error.']);
+    exit;
 }
 ?>
