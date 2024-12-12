@@ -43,7 +43,7 @@ saveButton.addEventListener("click", () => {
     formData.append("age", age);
     formData.append("history", history);
 
-    fetch("../actions/savePet.php", {
+    fetch("savePet.php", {
         method: "POST",
         body: formData,
     })
@@ -120,7 +120,7 @@ function deletePet(petId, petItem) {
     const formData = new FormData();
     formData.append("id", petId);
 
-    fetch("../actions/deletePet.php", {
+    fetch("deletePet.php", {
         method: "POST",
         body: formData,
     })
@@ -145,7 +145,7 @@ function editPet(petId, updatedType, updatedName, updatedAge, updatedHistory) {
     formData.append("age", updatedAge);
     formData.append("history", updatedHistory);
 
-    fetch("../actions/editPet.php", {
+    fetch("editPet.php", {
         method: "POST",
         body: formData,
     })
