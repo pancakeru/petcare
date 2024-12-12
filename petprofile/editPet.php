@@ -1,54 +1,41 @@
 <?php
-include '../database/petConnect.php';
 session_start();
+require_once 'petConnect.php';
 
-header('Content-Type: application/json'); // Ensure JSON response
+header('Content-Type: application/json');
 
-// Check if user is logged in
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['loggedIn']) || $_SESSION['loggedIn'] !== true) {
     echo json_encode(['success' => false, 'message' => 'User not logged in.']);
     exit;
 }
 
-$username = $_SESSION['username'];
-$pet_id = $_POST['pet_id'] ?? '';
-$type = $_POST['type'] ?? '';
-$name = $_POST['name'] ?? '';
-$age = $_POST['age'] ?? '';
-$history = $_POST['history'] ?? '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_SESSION['username'] ?? null;
+    $petId = intval($_POST['pet_id'] ?? 0);
+    $type = trim($_POST['type'] ?? '');
+    $name = trim($_POST['name'] ?? '');
+    $age = intval($_POST['age'] ?? 0);
+    $history = trim($_POST['history'] ?? '');
 
-// Validate input
-if (empty($pet_id) || empty($type) || empty($name) || empty($age) || empty($history)) {
-    echo json_encode(['success' => false, 'message' => 'All fields are required.']);
-    exit;
-}
-
-if (!is_numeric($age) || (int)$age <= 0) {
-    echo json_encode(['success' => false, 'message' => 'Age must be a positive number.']);
-    exit;
-}
-
-try {
-    // Prepare SQL statement
-    $sql = "UPDATE Pets SET type = :type, name = :name, age = :age, history = :history WHERE id = :pet_id AND username = :username";
-    $stmt = $pdo->prepare($sql);
-
-    // Bind parameters
-    $stmt->bindParam(':type', $type, PDO::PARAM_STR);
-    $stmt->bindParam(':name', $name, PDO::PARAM_STR);
-    $stmt->bindParam(':age', $age, PDO::PARAM_INT);
-    $stmt->bindParam(':history', $history, PDO::PARAM_STR);
-    $stmt->bindParam(':pet_id', $pet_id, PDO::PARAM_INT);
-    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-
-    // Execute query
-    if ($stmt->execute()) {
-        echo json_encode(['success' => true, 'message' => 'Pet updated successfully.']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Database error: Unable to update pet.']);
+    if (empty($username) || $petId <= 0 || empty($type) || empty($name) || $age <= 0 || empty($history)) {
+        echo json_encode(['success' => false, 'message' => 'All fields are required, and age must be a positive number.']);
+        exit;
     }
-} catch (PDOException $e) {
-    error_log("PDOException: " . $e->getMessage());
-    echo json_encode(['success' => false, 'message' => 'Internal server error.']);
+
+    $stmt = $conn->prepare("UPDATE Pets SET type = :type, name = :name, age = :age, history = :history WHERE id = :pet_id AND username = :username");
+    $stmt->bindValue(':type', $type, SQLITE3_TEXT);
+    $stmt->bindValue(':name', $name, SQLITE3_TEXT);
+    $stmt->bindValue(':age', $age, SQLITE3_INTEGER);
+    $stmt->bindValue(':history', $history, SQLITE3_TEXT);
+    $stmt->bindValue(':pet_id', $petId, SQLITE3_INTEGER);
+    $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+
+    if ($stmt->execute() && $conn->changes() > 0) {
+        echo json_encode(['success' => true, 'message' => 'Pet updated successfully!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Failed to update the pet or pet not found.']);
+    }
+} else {
+    echo json_encode(['success' => false, 'message' => 'Invalid request method.']);
 }
 ?>
