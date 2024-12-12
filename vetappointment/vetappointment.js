@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     petSelect.appendChild(option);
                 });
             } else {
-                alert("Failed to load pets. Please add pets to your profile first.");
+                alert("Please add pets to your profile first.");
                 console.error("Error loading pets:", data.error);
             }
         })
