@@ -185,7 +185,7 @@ filterSelect.addEventListener("change", () => {
 });
 
 function loadPets() {
-    fetch("fetchPets.php")
+    fetch("getPet.php")
         .then(response => response.json())
         .then(data => {
             if (data.success) {
