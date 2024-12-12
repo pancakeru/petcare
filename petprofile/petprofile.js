@@ -123,24 +123,35 @@ saveButton.addEventListener("click", () => {
         return;
     }
 
-    fetch("savePet.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ type, name, age, history }),
-    })
-        .then(response => response.json())
-        .then(data => {
+    fetch('savePet.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+        type: typeInput,
+        name: nameInput,
+        age: ageInput,
+        history: historyInput,
+    }),
+})
+    .then(response => response.text())
+    .then(text => {
+        try {
+            const data = JSON.parse(text);
             if (data.success) {
-                createPetProfile(data.pet_id, type, name, age, history);
-                addPanel.classList.add("hidden");
-                addPetForm.reset();
-                alert(data.message);
+                console.log('Pet saved successfully:', data);
+                // Handle success (e.g., update UI)
             } else {
-                alert(data.message);
+                console.error('Error saving pet:', data.message);
             }
-        })
-        .catch(err => console.error("Error saving pet:", err));
-});
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+            console.error('Response text:', text);
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+
 
 cancelButton.addEventListener("click", () => {
     addPanel.classList.add("hidden");
