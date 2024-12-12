@@ -1,39 +1,33 @@
 <?php
-// Specify the path to the SQLite database
+
 $dbname = '../database/petcareDB.sqlite';
 
-try {
-    // Create a PDO connection to the SQLite database
-    $pdo = new PDO("sqlite:$dbname");
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Set error mode to exceptions
-} catch (PDOException $e) {
-    // Handle connection errors
-    die(json_encode([
-        'success' => false,
-        'message' => 'Failed to connect to the database: ' . $e->getMessage()
-    ]));
+// Create connection
+$conn = new SQLite3($dbname);
+
+// Create the Pets table if it does not exist
+$sql_pets = "CREATE TABLE IF NOT EXISTS Pets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    age INTEGER NOT NULL,
+    history TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (username) REFERENCES users(username)
+)";
+if (!$conn->exec($sql_pets)) {
+    die("Error creating table 'Pets': " . $conn->lastErrorMsg());
 }
 
-// Ensure the Pets table exists; create it if it does not
-try {
-    $sql_pets = "CREATE TABLE IF NOT EXISTS Pets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT NOT NULL,
-        type TEXT NOT NULL,
-        name TEXT NOT NULL,
-        age INTEGER NOT NULL,
-        history TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (username) REFERENCES user(username)
-    )";
-
-    // Execute the query to create the table
-    $pdo->exec($sql_pets);
-} catch (PDOException $e) {
-    // Handle errors during table creation
-    die(json_encode([
-        'success' => false,
-        'message' => 'Error setting up database: ' . $e->getMessage()
-    ]));
+// Ensure the Users table exists for username reference
+$sql_users = "CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+if (!$conn->exec($sql_users)) {
+    die("Error creating table 'users': " . $conn->lastErrorMsg());
 }
-?>
