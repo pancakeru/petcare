@@ -11,6 +11,15 @@ let player = [];
 let inPlay = false;
 let pool = [];
 
+let myScore = 0;
+let aiScore = 0;
+
+let evalTimer = 100;
+let statScreen = false;
+let outcome = "";
+
+let trash = [];
+
 function preload() {
     rockSprite = loadImage("assets/coupon/rockcard.png");
     paperSprite = loadImage("assets/coupon/papercard.png");
@@ -41,6 +50,12 @@ function draw() {
    // background(238,192,203);
    background(200);
 
+    fill(255);
+    textSize(40);
+    textAlign(LEFT);
+    text(myScore, 20, 50);
+    text(aiScore, width - 50, 50);
+
     for (let c of cards) {
         c.display();
     }
@@ -61,6 +76,26 @@ function draw() {
         if(c.inHand) {
             c.hover();
         }
+    }
+
+    for (let c of trash) {
+        c.display();
+        if (c.moving) {
+            c.checkMove();
+        }
+    }
+
+    if(statScreen) {
+        textSize(28);
+        textAlign(CENTER);
+        text(outcome, width/1.88, height/1.47);
+        evalTimer--;
+    }
+
+    if (evalTimer <= 0) {
+        statScreen = false;
+        discard();
+        evalTimer = 100;
     }
 }
 
@@ -220,25 +255,58 @@ function AIPlay() {
     selected.moving = true;
     selected.AICard = true;
     pool.push(selected.face);
+    console.log(AI);
 }
 
 function evaluate() {
     let pCard = pool[0];
     let aCard = pool[1];
 
+    for (let c of AI) {
+        c.inHand = true;
+    }
+
     if (pCard == rockSprite && aCard == paperSprite ||
         pCard == paperSprite && aCard == scissorSprite ||
         pCard == scissorSprite && aCard == rockSprite
     ) {
-        //lose
-        console.log("lost");
+        aiScore += 1;
+        outcome = "Lose";
     } else if (aCard == rockSprite && pCard == paperSprite ||
         aCard == paperSprite && pCard == scissorSprite ||
         aCard == scissorSprite && pCard == rockSprite) {
-            //win
-            console.log("win");
+            myScore += 1;
+            outcome = "Win";
         } else {
-            //tie
-            console.log("draw");
+            outcome = "Draw";
         }
+ 
+    statScreen = true;
+
+}
+
+function discard() {
+    pool = [];
+
+    for (let i = 0; i < 3; i++) {
+        let c = AI[0];
+        console.log(c);
+        c.targetX = width/10 * 9;
+        c.targetY = height/2;
+        c.delay = 10 + i*10;
+        c.moving = true;
+        trash.push(c);
+        AI.pop(c);
+    }
+
+    for (let i = 0; i < 3; i++) {
+        let c = player[0];
+        c.targetX = width/10 * 9;
+        c.targetY = height/2;
+        c.delay = 10 + (i+3)*10;
+        c.moving = true;
+        trash.push(c);
+        player.pop(c);
+    }
+
 }
