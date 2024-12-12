@@ -91,7 +91,7 @@ const createPetProfile = (type, name, age, history) => {
     activityContainer.appendChild(petItem);
 };
 
-// Add Pet
+// Add Pet and check log in
 addButton.addEventListener("click", () => {
     fetch("../database/checkLogin.php")
         .then(response => response.json())
@@ -112,6 +112,7 @@ cancelButton.addEventListener("click", () => {
     addPetForm.reset();
 });
 
+// save
 saveButton.addEventListener("click", () => {
     const type = document.getElementById("petSelect").value.trim();
     const name = document.getElementById("petName").value.trim();
