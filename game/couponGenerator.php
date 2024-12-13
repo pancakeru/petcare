@@ -1,39 +1,44 @@
 <?php
-require_once '../database/dbConnect.php';
 
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
+$dbname = '../database/petcareDB.sqlite';
 
-try {
-    $db = new SQLite3('../database/my_database.sqlite');
+// Create connection
+$conn = new SQLite3($dbname);
 
-    $createTableSQL = "CREATE TABLE IF NOT EXISTS coupons (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        code TEXT NOT NULL,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )";
-    $db->exec($createTableSQL);
-
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    if (isset($data['coupon'])) {
-        $coupon = $db->escapeString($data['coupon']);
-
-        $sql = "INSERT INTO coupons (code) VALUES ('$coupon')";
-
-        if ($db->exec($sql)) {
-            echo json_encode(["success" => true, "message" => "Coupon saved successfully."]);
-        } else {
-            http_response_code(500);
-            echo json_encode(["success" => false, "message" => "Error: Could not save the coupon."]);
-        }
-    } else {
-        http_response_code(400);
-        echo json_encode(["success" => false, "message" => "Invalid request data."]);
-    }
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Error: " . $e->getMessage()]);
+// Ensure the 'coupons' table exists
+$sql_coupons = "CREATE TABLE IF NOT EXISTS coupons (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)";
+if (!$conn->exec($sql_coupons)) {
+    die("Error creating table 'coupons': " . $conn->lastErrorMsg());
 }
+
+// Read POST data
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (isset($data['coupon'])) {
+    $couponCode = $data['coupon'];
+
+    // Insert coupon into database
+    $stmt = $conn->prepare("INSERT INTO coupons (code) VALUES (:code)");
+    $stmt->bindValue(':code', $couponCode, SQLITE3_TEXT);
+
+    if ($stmt->execute()) {
+        // Success response
+        http_response_code(200);
+        echo json_encode(["message" => "Coupon added successfully."]);
+    } else {
+        // Error response
+        http_response_code(500);
+        echo json_encode(["message" => "Failed to add coupon: " . $conn->lastErrorMsg()]);
+    }
+} else {
+    // Invalid request response
+    http_response_code(400);
+    echo json_encode(["message" => "Invalid request. No coupon provided."]);
+}
+
+$conn->close();
 ?>
