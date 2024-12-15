@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
     const appointmentsContainer = document.getElementById("appointments");
 
-    fetch("getAppointments.php")
+    fetch("getAppointment.php")
         .then(response => response.json())
         .then(data => {
             if (data.success) {
