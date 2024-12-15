@@ -88,17 +88,37 @@
             <div class="two" id="upcoming">
                 <h2>Upcoming Appointments</h2>
                 <div class="list">
-                    <li>Appointment 1</li>
-                    <li>Appointment 2</li>
-                    <li>Appointment 3</li>
+                    <ul>
+                        <?php
+                            if (!empty($upcomingAppointments)) {
+                                foreach ($upcomingAppointments as $appointment) {
+                                    echo "<li><strong>" . htmlspecialchars($appointment['petName']) . "</strong>: " .
+                                        htmlspecialchars($appointment['date']) . " at " . htmlspecialchars($appointment['time']) .
+                                        " - " . htmlspecialchars($appointment['reason']) . "</li>";
+                                }
+                            } else {
+                                echo "<li>No upcoming appointments.</li>";
+                            }
+                        ?>
+                    </ul>
                 </div>
             </div>
             <div class="two" id="history">
                 <h2>Appointment History</h2>
                 <div class="list">
-                    <li>Previous 1</li>
-                    <li>Previous 2</li>
-                    <li>Previous 3</li>
+                     <ul>
+                        <?php
+                            if (!empty($previousAppointments)) {
+                                foreach ($previousAppointments as $appointment) {
+                                    echo "<li><strong>" . htmlspecialchars($appointment['petName']) . "</strong>: " .
+                                        htmlspecialchars($appointment['date']) . " at " . htmlspecialchars($appointment['time']) .
+                                        " - " . htmlspecialchars($appointment['reason']) . "</li>";
+                                }
+                            } else {
+                                echo "<li>No previous appointments.</li>";
+                            }
+                        ?>
+                    </ul>
                 </div>
             </div>
         </div>
