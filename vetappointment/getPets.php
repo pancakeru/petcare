@@ -3,24 +3,26 @@ header('Content-Type: application/json');
 include '../database/petConnect.php';
 session_start();
 
+// Ensure user is logged in
 if (!isset($_SESSION['username'])) {
-    echo json_encode(["success" => false, "message" => "You must be logged in to view appointments."]);
+    echo json_encode(["success" => false, "message" => "You must be logged in to fetch pets."]);
     exit;
 }
 
 try {
     $username = $_SESSION['username'];
 
-    $stmt = $conn->prepare("SELECT a.id, a.date, a.time, a.reason, p.name AS petName, p.type AS petType FROM Appointments a INNER JOIN Pets p ON a.petId = p.id WHERE p.username = :username ORDER BY a.date ASC, a.time ASC");
+    // Query to fetch pets
+    $stmt = $conn->prepare("SELECT id, type, name, age, history FROM Pets WHERE username = :username");
     $stmt->bindValue(':username', $username, SQLITE3_TEXT);
     $result = $stmt->execute();
 
-    $appointments = [];
+    $pets = [];
     while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
-        $appointments[] = $row;
+        $pets[] = $row;
     }
 
-    echo json_encode(["success" => true, "appointments" => $appointments]);
+    echo json_encode(["success" => true, "pets" => $pets]);
 } catch (Exception $e) {
     echo json_encode(["success" => false, "message" => $e->getMessage()]);
 }
