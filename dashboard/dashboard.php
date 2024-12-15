@@ -14,6 +14,43 @@
             $pets[] = $row;
         }
         $petCount = count($pets);
+
+        // Fetch user's appointments
+        $currentDateTime = date('Y-m-d H:i:s');
+    
+        // Fetch upcoming appointments
+        $stmt = $conn->prepare("
+            SELECT a.id, a.date, a.time, a.reason, p.name AS petName
+            FROM Appointments a
+            INNER JOIN Pets p ON a.petId = p.id
+            WHERE p.username = :username AND (a.date || ' ' || a.time) >= :currentDateTime
+            ORDER BY a.date, a.time ASC
+        ");
+        $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+        $stmt->bindValue(':currentDateTime', $currentDateTime, SQLITE3_TEXT);
+        $result = $stmt->execute();
+    
+        $upcomingAppointments = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $upcomingAppointments[] = $row;
+        }
+    
+        // Fetch previous appointments
+        $stmt = $conn->prepare("
+            SELECT a.id, a.date, a.time, a.reason, p.name AS petName
+            FROM Appointments a
+            INNER JOIN Pets p ON a.petId = p.id
+            WHERE p.username = :username AND (a.date || ' ' || a.time) < :currentDateTime
+            ORDER BY a.date DESC, a.time DESC
+        ");
+        $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+        $stmt->bindValue(':currentDateTime', $currentDateTime, SQLITE3_TEXT);
+        $result = $stmt->execute();
+    
+        $previousAppointments = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $previousAppointments[] = $row;
+        }
     }
 ?>
 <!DOCTYPE html>
