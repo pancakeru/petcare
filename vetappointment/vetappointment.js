@@ -21,8 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     petSelect.appendChild(option);
                 });
             } else {
-                alert("Please add pets to your profile first.");
-                console.error("Error loading pets:", data.error);
+                alert("Please log in and add your pets first");
+                // Redirect to the login page
+                window.location.href = "../login/login.php";
+                //console.error("Error loading pets:", data.error);
             }
         })
         .catch((error) => console.error("Error fetching pets:", error));

@@ -5,6 +5,7 @@
 
     // Fetch pets from the database
     $pets = [];
+    $petCount = 0;
     if(isset($_SESSION['username'])) {
         $username = $_SESSION['username'];
         $stmt = $conn->prepare("SELECT * FROM Pets WHERE username = :username ORDER BY created_at DESC");
@@ -14,7 +15,6 @@
             $pets[] = $row;
         }
         $petCount = count($pets);
-
         // Fetch user's appointments
         $currentDateTime = date('Y-m-d H:i:s');
     
