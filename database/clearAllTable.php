@@ -6,7 +6,7 @@ try {
     $conn->exec("PRAGMA foreign_keys = OFF");
 
     // List of tables to clear
-    $tables = ['shopping_cart', 'users', "inventory"];
+    $tables = ['coupons'];
 
     foreach ($tables as $table) {
         $sql = "DELETE FROM $table";
@@ -18,7 +18,7 @@ try {
     }
 
     // Clear the sqlite_sequence table
-    $sql = "DELETE FROM sqlite_sequence";
+    $sql = "DELETE FROM sqlite_sequence WHERE name IN ('" . implode("','", $tables) . "')";
     if ($conn->exec($sql)) {
         echo "Table sqlite_sequence cleared successfully.<br>";
     } else {

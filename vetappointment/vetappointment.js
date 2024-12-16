@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     appointmentsContainer.appendChild(item);
                 });
             } else {
-                alert("Failed to load appointments.");
+                // alert("Failed to load appointments.");
             }
         })
         .catch(error => console.error("Error loading appointments:", error));

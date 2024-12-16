@@ -434,7 +434,7 @@ function awardCoupon() {
         body: JSON.stringify({ coupon: couponCode })
     }).then(response => {
         if (response.ok) {
-            alert('Congratulations! You earned a coupon: ' + couponCode);
+            alert('Congratulations! You earned a pet treat!');
         } else {
             alert('Failed to save coupon. Please try again later.');
         }

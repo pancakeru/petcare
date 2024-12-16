@@ -52,6 +52,20 @@
             $previousAppointments[] = $row;
         }
     }
+
+    // fetch the pet treat count 
+    $petTreats = [];
+    $petTreatCount = 0;
+    if (isset($_SESSION['username'])){
+        $stmt = $conn->prepare("SELECT * FROM coupons WHERE username = :username ORDER BY created_at DESC");
+        $stmt->bindValue(':username', $username, SQLITE3_TEXT);
+        $result = $stmt->execute();
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $petTreats[] = $row;
+        }
+        $petTreatCount = count($petTreats);
+    }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -139,11 +153,12 @@
         </div>
 
         <div class="savings container">
-            <h2>Savings</h2>
+            <h2>Pet Treat</h2>
             <div class="bar-container">
-                <div class="bar" data-value="70">With Savings: <span>$20</span></div>
-                <div class="bar" data-value="80">No savings: <span>$25</span></div>
-                <div class="bar" data-value="10">Saved: <span>$5</span></div>
+                <div>Pet treat that can be earned:</div>
+                <div class="bar" data-value="90"><span>100</span></div>
+                <div>Pet treat earned:</div>
+                <div class="bar" data-value="<?php echo min(90, ($petTreatCount / 100) * 90); ?>"><span><?php echo $petTreatCount ?></span></div>
             </div>
         </div>
     </div>
