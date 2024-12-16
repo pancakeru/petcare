@@ -3,7 +3,8 @@
 $dbname = '../database/petcareDB.sqlite';
 
 // Create connection
-$conn = new SQLite3($dbname);
+$conn = new SQLite3($dbname, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+$conn->exec('PRAGMA foreign_keys = ON;');
 
 // Ensure the 'coupons' table exists
 $sql_coupons = "CREATE TABLE IF NOT EXISTS coupons (
