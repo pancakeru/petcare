@@ -63,7 +63,7 @@ function draw() {
     fill(255);
     textSize(40);
     textAlign(LEFT);
-    text(consecutiveWins + "/5", 20, 50);
+    text(consecutiveWins + "/3", 20, 50);
     //text(aiScore, width - 50, 50);
 
     for (let c of cards) {
@@ -340,7 +340,7 @@ function evaluate() {
             myScore += 1;
             outcome = "Win";
             consecutiveWins += 1;
-            if (consecutiveWins === 5) {
+            if (consecutiveWins === 3) {
                 awardCoupon();
             }
         } else {
